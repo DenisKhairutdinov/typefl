@@ -290,14 +290,20 @@ export function initMotion() {
   if (reducedMotion()) return
   initSmoothScroll()
   introHero()
-  parallaxHero()
-  stages()
+  // На телефоне прокрутка идёт на слабом процессоре, и покадровые анимации от неё (раскрытие кадра,
+  // параллакс, смена межбуквенного расстояния) заставляют страницу замирать. Там их нет, остаются
+  // появление блоков и заполнение текста.
+  const phone = matchMedia('(max-width: 767px)').matches
+  if (!phone) {
+    parallaxHero()
+    stages()
+    backdrops()
+    parallaxBlocks()
+    footerMark()
+  }
   rail()
-  backdrops()
-  parallaxBlocks()
   reveals()
   fillStatement()
-  footerMark()
   header()
 
   // Фото грузятся позже вёрстки: положения триггеров пересчитываем

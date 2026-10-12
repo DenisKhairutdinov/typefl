@@ -162,49 +162,35 @@ function addArrows(host, onStep) {
 
 /**
  * Смахивание в сторону листает фото: влево следующее, вправо предыдущее.
- * Как только движение пальца ушло в бок, вертикальная прокрутка страницы блокируется (touchmove
- * отменяется), а если оно пошло вверх или вниз, жест отдаётся странице и фото не листается.
+ * Все слушатели пассивные: непассивный touchmove заставляет браузер ждать скрипт перед каждым
+ * сдвигом страницы, и на телефоне прокрутка по карточкам застывает. Вертикальную прокрутку при боковом
+ * жесте запрещает стиль touch-action: pan-y у области фото: боковое движение страницу не сдвигает.
  */
 function addSwipe(target, onStep) {
-  const SLOP = 8
   let startX = 0
   let startY = 0
-  let mode = '' // '', 'x' — боковое смахивание, 'y' — прокрутка страницы
-
+  let single = false
   target.addEventListener(
     'touchstart',
     (event) => {
-      mode = event.touches.length === 1 ? '' : 'y'
+      single = event.touches.length === 1
       startX = event.touches[0].clientX
       startY = event.touches[0].clientY
     },
     { passive: true },
   )
   target.addEventListener(
-    'touchmove',
-    (event) => {
-      if (mode === 'y') return
-      const dx = event.touches[0].clientX - startX
-      const dy = event.touches[0].clientY - startY
-      if (!mode && (Math.abs(dx) > SLOP || Math.abs(dy) > SLOP)) {
-        mode = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
-      }
-      // Боковой жест: прокрутка страницы запрещена до конца касания
-      if (mode === 'x' && event.cancelable) event.preventDefault()
-    },
-    { passive: false },
-  )
-  target.addEventListener(
     'touchend',
     (event) => {
-      if (mode !== 'x') return
-      mode = ''
+      if (!single) return
+      single = false
       const dx = event.changedTouches[0].clientX - startX
-      if (Math.abs(dx) > 40) onStep(dx < 0 ? 1 : -1)
+      const dy = event.changedTouches[0].clientY - startY
+      // Боковой жест, а не прокрутка страницы
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) onStep(dx < 0 ? 1 : -1)
     },
     { passive: true },
   )
-  target.addEventListener('touchcancel', () => (mode = ''), { passive: true })
 }
 /** Экономный режим или медленная сеть: заранее ничего не качаем. */
 const saveData = () => {

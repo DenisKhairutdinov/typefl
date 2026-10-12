@@ -454,8 +454,13 @@
   display: grid;
   cursor: pointer;
   align-items: center;
+  min-width: 0;
   height: 100%;
   min-height: 54px;
+
+  /* Длинные подписи переносятся внутри плитки, а не вылезают за её край */
+  overflow-wrap: anywhere;
+  hyphens: auto;
   padding: 12px 18px;
   background: var(--tint-2);
   font-size: 0.95rem;
@@ -1484,5 +1489,11 @@
 
   .cfg__step--wide .cfg__opts {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* В узкой плитке чуть меньше шрифт и поля, чтобы слово целиком умещалось в ширину */
+  .opt__text {
+    padding: 10px 12px;
+    font-size: 0.86rem;
   }
 }
