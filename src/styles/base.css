@@ -126,6 +126,12 @@ html.lenis body {
   padding-inline: var(--gutter);
 }
 
+/* Своё окно подтверждения у Тильды не нужно: о заявке сообщает окно сайта */
+#tildaformsuccesspopup,
+.t-form-success-popup {
+  display: none !important;
+}
+
 /* Форма Тильды, через которую уходят заявки сайта: работает, но посетителю не видна */
 .uc-form {
   position: fixed;

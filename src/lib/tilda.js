@@ -92,6 +92,15 @@ function reset(form) {
   form.classList.remove('t-form_sending', 'js-send-form-success')
 }
 
+/**
+ * Окно «Спасибо» самой Тильды скрыто стилями сайта, но пока оно «открыто», Тильда блокирует
+ * прокрутку страницы. Блокировку снимаем сами, иначе страница перестала бы прокручиваться.
+ */
+function dismissPopup() {
+  document.body.classList.remove('t-body_success-popup-showed')
+  window.tildaForm?.unlockBodyScroll?.()
+}
+
 /** Склеивает поля, которых нет в форме Тильды, в комментарий. */
 function commentOf(values) {
   const lines = []
@@ -149,6 +158,8 @@ export async function sendViaTilda(values) {
   try {
     await result
     console.warn('[Тильда] заявка принята')
+    dismissPopup()
+    setTimeout(dismissPopup, 400)
   } finally {
     // Тильда показывает своё сообщение об успехе внутри спрятанной формы: убираем его до следующей заявки
     setTimeout(() => reset(form), 300)
