@@ -131,9 +131,43 @@ function renderConfig(note, code, rowsJson) {
   note.append(text)
 }
 
+/** Имя считается введённым, если в нём есть хотя бы две буквы. */
+const nameOk = (value) => (value.match(/\p{L}/gu) ?? []).length >= 2
+
+/** Почта считается введённой, если она в правильном формате; пустая остаётся без отметки. */
+const emailOk = (value) => EMAIL.test(value.trim())
+
+/**
+ * Живая проверка имени и почты: у верно заполненного поля появляется та же галочка, что у телефона.
+ * Сбросили форму (после отправки): отметки с прежнего ввода убираются.
+ */
+function initFieldChecks(root) {
+  const rules = { name: nameOk, email: emailOk }
+
+  const render = (input) => {
+    const field = input.closest('.field')
+    if (field) field.classList.toggle('field--valid', rules[input.name](input.value))
+  }
+
+  root.addEventListener('input', (event) => {
+    const input = event.target.closest?.('input[name="name"], input[name="email"]')
+    if (input) render(input)
+  })
+  root.addEventListener('reset', (event) => {
+    setTimeout(() => {
+      for (const input of event.target.querySelectorAll(
+        'input[name="name"], input[name="email"]',
+      )) {
+        render(input)
+      }
+    }, 0)
+  })
+}
+
 /** Формы страницы и окно заявки. */
 export function initForms(root) {
   initPhoneInputs(root)
+  initFieldChecks(root)
   const dialog = root.querySelector('[data-dialog="kp"]')
   const thanks = root.querySelector('[data-dialog="thanks"]')
   const title = dialog.querySelector('[data-dialog-title]')
