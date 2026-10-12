@@ -38,8 +38,8 @@ function setSource(node, name, sizes) {
 }
 
 /**
- * Меняет фото. Направление dir задаёт, с какой стороны новое фото вдвигается шторкой
- * (1 вперёд, -1 назад); 0 — мягкое проявление, когда порядка нет.
+ * Меняет фото: новое быстро проявляется поверх прежнего. Направление dir задаёт, с какой стороны
+ * оно слегка сдвигается (1 вперёд, -1 назад); 0 — просто проявление, когда порядка нет.
  */
 function swapPhoto(img, name, alt, dir = 0, force = false) {
   if (img.dataset.name === name) return true
@@ -49,7 +49,6 @@ function swapPhoto(img, name, alt, dir = 0, force = false) {
   const sizes = img.dataset.sizes ?? CARD_SIZES
   if (force) {
     img._last = null
-    delete img.dataset.leaving
     img.parentNode.querySelectorAll(':scope > .photo-incoming').forEach((node) => node.remove())
   }
   // Пустое основное фото (первое открытие окна) заполняем сразу, без перехода
@@ -64,14 +63,14 @@ function swapPhoto(img, name, alt, dir = 0, force = false) {
     if (img.dataset.name === name) img._busy = false
   }
   // Подстраховка: замок не должен остаться, даже если анимация не дошла до конца
-  setTimeout(release, 2500)
+  setTimeout(release, 1000)
   const loader = new Image()
   loader.decoding = 'async'
   setSource(loader, name, sizes)
   // Декодируем заранее, чтобы кадр не тормозил ни на старте, ни в конце перехода
   const ready = Promise.race([
     loader.decode ? loader.decode().catch(() => {}) : Promise.resolve(),
-    new Promise((resolve) => setTimeout(resolve, 600)),
+    new Promise((resolve) => setTimeout(resolve, 250)),
   ])
   ready.then(() => {
     if (img.dataset.name !== name) return
@@ -88,13 +87,11 @@ function swapPhoto(img, name, alt, dir = 0, force = false) {
     layer.setAttribute('aria-hidden', 'true')
     setSource(layer, name, sizes)
     // Быстрые переключения не обрываем: новое фото ложится поверх прежних слоёв
-    const busy = Boolean(img._last)
     // Нижние слои уже закрыты верхними, лишние убираем, чтобы не копились
     const stack = [...img.parentNode.querySelectorAll(':scope > .photo-incoming')]
     for (const old of stack.slice(0, Math.max(0, stack.length - 1))) old.remove()
     ;(img._last ?? img).after(layer)
     img._last = layer
-    if (!busy) img.dataset.leaving = String(dir)
     // Клон скопировал transform, который прокрутка двигает у основного фото: пока слой жив,
     // повторяем его каждый кадр, иначе при уходе слоя картинка «подпрыгивает»
     let syncing = true
@@ -116,7 +113,6 @@ function swapPhoto(img, name, alt, dir = 0, force = false) {
         requestAnimationFrame(() =>
           requestAnimationFrame(() => {
             syncing = false
-            delete img.dataset.leaving
             img.parentNode
               .querySelectorAll(':scope > .photo-incoming')
               .forEach((node) => node.remove())
@@ -125,21 +121,16 @@ function swapPhoto(img, name, alt, dir = 0, force = false) {
         )
       }
       if (img.decode)
-        Promise.race([img.decode().catch(() => {}), new Promise((r) => setTimeout(r, 300))]).then(
+        Promise.race([img.decode().catch(() => {}), new Promise((r) => setTimeout(r, 120))]).then(
           done,
         )
       else done()
     }
     layer.addEventListener('animationend', finish, { once: true })
-    setTimeout(finish, 1200)
+    setTimeout(finish, 450)
   })
   return true
 }
-
-const HOVER_DELAY = 130
-
-/** Через сколько повторить переключение, если предыдущий слайд ещё не закончил смену. */
-const RETRY_DELAY = 120
 
 /** Направление перехода между миниатюрами: вперёд, если новая правее выбранной. */
 function directionOf(buttons, target) {
@@ -169,34 +160,52 @@ function addArrows(host, onStep) {
   }
 }
 
-/** Смахивание в сторону листает фото: влево следующее, вправо предыдущее. */
+/**
+ * Смахивание в сторону листает фото: влево следующее, вправо предыдущее.
+ * Как только движение пальца ушло в бок, вертикальная прокрутка страницы блокируется (touchmove
+ * отменяется), а если оно пошло вверх или вниз, жест отдаётся странице и фото не листается.
+ */
 function addSwipe(target, onStep) {
+  const SLOP = 8
   let startX = 0
   let startY = 0
-  let single = false
+  let mode = '' // '', 'x' — боковое смахивание, 'y' — прокрутка страницы
+
   target.addEventListener(
     'touchstart',
     (event) => {
-      single = event.touches.length === 1
+      mode = event.touches.length === 1 ? '' : 'y'
       startX = event.touches[0].clientX
       startY = event.touches[0].clientY
     },
     { passive: true },
   )
   target.addEventListener(
+    'touchmove',
+    (event) => {
+      if (mode === 'y') return
+      const dx = event.touches[0].clientX - startX
+      const dy = event.touches[0].clientY - startY
+      if (!mode && (Math.abs(dx) > SLOP || Math.abs(dy) > SLOP)) {
+        mode = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
+      }
+      // Боковой жест: прокрутка страницы запрещена до конца касания
+      if (mode === 'x' && event.cancelable) event.preventDefault()
+    },
+    { passive: false },
+  )
+  target.addEventListener(
     'touchend',
     (event) => {
-      if (!single) return
-      single = false
+      if (mode !== 'x') return
+      mode = ''
       const dx = event.changedTouches[0].clientX - startX
-      const dy = event.changedTouches[0].clientY - startY
-      // Горизонтальное движение, а не вертикальная прокрутка страницы
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) onStep(dx < 0 ? 1 : -1)
+      if (Math.abs(dx) > 40) onStep(dx < 0 ? 1 : -1)
     },
     { passive: true },
   )
+  target.addEventListener('touchcancel', () => (mode = ''), { passive: true })
 }
-
 /** Заранее подгружает соседние фото, чтобы листание не ждало сети. */
 function warmNeighbours(buttons, button) {
   const list = [...buttons]
@@ -258,25 +267,6 @@ export function initStageThumbs(root) {
     const button = event.target.closest('[data-stage-thumb]')
     if (button) choose(button)
   })
-  if (matchMedia('(hover: hover)').matches) {
-    // Переключаем по наведению с небольшой задержкой, чтобы быстрый проход мышью не мелькал
-    let timer = 0
-    // Если прошлый слайд ещё меняется, ждём конца смены и пробуем снова, пока курсор на миниатюре
-    const attempt = (button) => {
-      if (button.getAttribute('aria-pressed') === 'true') return
-      if (!choose(button)) timer = setTimeout(() => attempt(button), RETRY_DELAY)
-    }
-    root.addEventListener('mouseover', (event) => {
-      const button = event.target.closest('[data-stage-thumb]')
-      clearTimeout(timer)
-      if (button && button.getAttribute('aria-pressed') !== 'true') {
-        timer = setTimeout(() => attempt(button), HOVER_DELAY)
-      }
-    })
-    root.addEventListener('mouseout', (event) => {
-      if (event.target.closest('[data-stage-thumb]')) clearTimeout(timer)
-    })
-  }
 }
 
 /** Окно модели: фото, варианты исполнения и полные характеристики модели. */
@@ -445,26 +435,6 @@ export function initModels(root) {
     dialog.showModal()
     stopScroll()
     startScroll()
-  }
-
-  // Миниатюры в окне переключают фото и по наведению
-  if (matchMedia('(hover: hover)').matches) {
-    let hoverTimer = 0
-    const attempt = (thumb) => {
-      if (thumb.getAttribute('aria-pressed') === 'true') return
-      if (!showPhoto(thumb.dataset.photo))
-        hoverTimer = setTimeout(() => attempt(thumb), RETRY_DELAY)
-    }
-    dialog.addEventListener('mouseover', (event) => {
-      const thumb = event.target.closest('[data-photo]')
-      clearTimeout(hoverTimer)
-      if (thumb && thumb.getAttribute('aria-pressed') !== 'true') {
-        hoverTimer = setTimeout(() => attempt(thumb), HOVER_DELAY)
-      }
-    })
-    dialog.addEventListener('mouseout', (event) => {
-      if (event.target.closest('[data-photo]')) clearTimeout(hoverTimer)
-    })
   }
 
   root.addEventListener('click', (event) => {

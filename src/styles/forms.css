@@ -564,6 +564,7 @@
 .model__stage {
   position: relative;
   overflow: hidden;
+  touch-action: pan-y pinch-zoom;
 }
 
 .model__stage .photo-incoming {
