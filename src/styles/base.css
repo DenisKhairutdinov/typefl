@@ -1,0 +1,257 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-radius: 0;
+}
+
+html {
+  overflow-x: clip;
+  scrollbar-gutter: stable;
+  background: var(--ink);
+  color: var(--white);
+  font-family: var(--font-text);
+  font-size: 100%;
+  line-height: 1.55;
+  scroll-padding-top: var(--top);
+  text-size-adjust: 100%;
+}
+
+/* Свой скроллбар страницы: узкая тёмная направляющая, квадратный ползунок, на ховере акцент */
+html::-webkit-scrollbar {
+  width: 12px;
+}
+
+html::-webkit-scrollbar-track {
+  background: var(--ink);
+}
+
+html::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  background: var(--mute);
+  background-clip: padding-box;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+html::-webkit-scrollbar-thumb:active {
+  background: var(--accent);
+  background-clip: padding-box;
+}
+
+/* Firefox не знает ::-webkit-scrollbar */
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-color: var(--mute) var(--ink);
+    scrollbar-width: thin;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--ink);
+  font-size: clamp(1rem, 0.95rem + 0.15vw, 1.0625rem);
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol,
+dl,
+dd,
+figure {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  /* hidden, а не clip: clip сбрасывает прокрутку страницы в начало при открытии окна */
+  overflow: hidden;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 1560px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.skip {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+  transform: translateY(-200%);
+}
+
+.skip:focus {
+  transform: none;
+}
+
+.glass {
+  border: 0;
+  background: var(--glass);
+  backdrop-filter: blur(22px) saturate(140%);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .glass {
+    background: color-mix(in srgb, var(--ink) 94%, transparent);
+  }
+}
+
+/* Подпись раздела: квадратный маркер и моноширинный текст */
+.label {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--line);
+}
+
+.label::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+}
+
+.section--paper .label {
+  color: var(--ink-2);
+}
+
+.title {
+  max-width: 28em;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4.9vw, 5.6rem);
+  font-weight: 300;
+  letter-spacing: 0;
+  line-height: 0.94;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+.title--ink {
+  color: var(--ink);
+}
+
+.lead {
+  max-width: 62ch;
+  color: var(--line);
+  font-size: clamp(1.05rem, 1rem + 0.25vw, 1.2rem);
+}
+
+.lead--ink {
+  color: var(--ink-2);
+}
+
+.w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  white-space: nowrap;
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+}
+
+.w__i {
+  display: inline-block;
+}
+
+.section {
+  padding-block: var(--section);
+}
+
+.section--paper {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.head {
+  display: grid;
+  gap: 20px;
+  margin-bottom: clamp(32px, 5vw, 72px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Знак рубля берётся из Inter: в заголовочном шрифте он нарисован иначе */
+.rub {
+  font-family: var(--font-text);
+  letter-spacing: 0;
+}
+
+/* В крупных тонких заголовках тоньше и чуть меньше, чтобы совпасть по штриху */
+.title .rub,
+.subsidy__sum .rub {
+  font-size: 0.8em;
+  font-weight: 200;
+}

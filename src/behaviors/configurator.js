@@ -1,0 +1,334 @@
+import { CONFIGURATORS } from '../data/configurator.js'
+import { track } from '../lib/track.js'
+
+const el = (tag, className, text) => {
+  const node = document.createElement(tag)
+  if (className) node.className = className
+  if (text !== undefined) node.textContent = text
+  return node
+}
+
+/**
+ * Правила совместимости полуприцепа.
+ * Возвращают список допустимых значений параметра при текущих остальных или null, если ограничений нет.
+ */
+const LIMITS = {
+  volume: (s) => (s.purpose === 'Техническая вода' ? 26 : null),
+}
+
+const INSULATION = 'Термоизоляция (пенополиуретан 100 мм)'
+
+const RULES = {
+  sections: (s) => {
+    if (s.purpose === 'Техническая вода') return ['1']
+    // Три секции от 20 м³, четыре от 28 м³
+    return ['1', '2', ...(s.volume >= 20 ? ['3'] : []), ...(s.volume >= 28 ? ['4'] : [])]
+  },
+  axles: (s) => {
+    if (s.volume <= 24) return ['2']
+    // Четыре оси только от 32 м³
+    return s.volume >= 32 ? ['3', '4'] : ['3']
+  },
+}
+
+/** Опции, доступные не всегда: ключ шага, затем название опции. */
+const OPTION_RULES = {
+  extras: {
+    [INSULATION]: (s) => s.purpose !== 'Светлые нефтепродукты',
+    'Узел выдачи топлива': (s) => s.purpose === 'Светлые нефтепродукты',
+    'Нижний налив / рекуперация': (s) => s.purpose !== 'Техническая вода',
+  },
+}
+
+/** Префикс по назначению: светлые нефтепродукты, тёмные, техническая вода. */
+const PURPOSE_PREFIX = {
+  'Светлые нефтепродукты': 'ППЦ',
+  'Тёмные нефтепродукты': 'ППЦН',
+  'Техническая вода': 'ППЦТВ',
+}
+
+/** Название комплектации по выбранным параметрам. */
+function codeOf(cfg, s) {
+  if (cfg.id === 'trailer') {
+    const prefix = PURPOSE_PREFIX[s.purpose] ?? cfg.prefix
+    const shape = s.shape === 'Круг' ? 'К' : ''
+    const insulation = s.extras.includes(INSULATION) ? 'Т' : ''
+    const suspension = s.suspension === 'Рессорная' ? 'Р' : 'П'
+    return `${prefix}-${s.volume}/${s.sections}${insulation}${shape}-${suspension}${s.axles}-${s.maker}-${s.ssu}`.toUpperCase()
+  }
+  return `${cfg.prefix}-${s.volume}/${s.sections}`.toUpperCase()
+}
+
+/** Строки сводки: название параметра и выбранное значение. */
+function summaryOf(cfg, s) {
+  const rows = [['Назначение', s.purpose.toLowerCase()]]
+  rows.push(['Объём цистерны', `${s.volume} м³`], ['Количество секций', s.sections])
+  if (cfg.id === 'trailer') {
+    rows.push(
+      ['Форма цистерны', s.shape.toLowerCase()],
+      ['Конструкция', s.frame.toLowerCase()],
+      ['Материал', `сталь 09Г2С, ${s.wall}`],
+      ['Количество осей', s.axles],
+      ['Производитель осей', s.maker],
+      ['Высота ССУ', `${s.ssu} мм`],
+      ['Шины', s.tyres.split(' (')[0]],
+      ['Подвеска', s.suspension.toLowerCase()],
+      ['Тормоза', s.brakes.toLowerCase()],
+      [
+        'Опции',
+        s.extras.length
+          ? s.extras.map((x) => x.split(' (')[0].toLowerCase()).join(', ')
+          : 'без опций',
+      ],
+    )
+  } else {
+    rows.push(
+      ['Шасси', s.chassis],
+      ['Узел выдачи топлива', s.unit.toLowerCase()],
+      ['Материал', 'сталь 09Г2С, 4 мм'],
+    )
+  }
+  return rows
+}
+
+/** Конфигуратор: шаги слева, живая сводка справа, две кнопки заявки. */
+export function initConfigurator(root) {
+  const box = root.querySelector('[data-configurator]')
+  if (!box) return
+  box.replaceChildren()
+
+  const state = {}
+  for (const cfg of CONFIGURATORS) {
+    state[cfg.id] = { ...cfg.defaults }
+    for (const step of cfg.steps) {
+      if (state[cfg.id][step.key] === undefined) {
+        state[cfg.id][step.key] = step.type === 'multi' ? [] : step.options[0]
+      }
+    }
+  }
+  normalize(state.trailer)
+  let current = CONFIGURATORS[0]
+  let reported = false
+  const refs = {}
+
+  const tabs = el('div', 'cfg__tabs')
+  tabs.setAttribute('role', 'tablist')
+  const form = el('div', 'cfg__steps')
+  const aside = el('aside', 'cfg__summary')
+  aside.setAttribute('aria-live', 'polite')
+  box.append(...(CONFIGURATORS.length > 1 ? [tabs] : []), form, aside)
+
+  const renderSummary = () => {
+    const s = state[current.id]
+    const code = codeOf(current, s)
+    const rows = summaryOf(current, s)
+    const text = `${code}. ${rows.map(([k, v]) => `${k}: ${v}`).join('; ')}`
+
+    const list = el('dl', 'specs specs--cfg')
+    for (const [k, v] of rows) {
+      const row = el('div', v.length > 20 ? 'specs__row specs__row--wide' : 'specs__row')
+      row.append(el('dt', '', k), el('dd', '', v))
+      list.append(row)
+    }
+    const actions = el('div', 'cfg__actions')
+    const kp = el('button', 'btn btn--primary btn--big', 'Получить КП')
+    const talk = el('button', 'btn btn--line btn--big', 'Обсудить с менеджером')
+    for (const [btn, title] of [
+      [kp, `Получите КП на ${code}`],
+      [talk, 'Обсудить с менеджером'],
+    ]) {
+      btn.type = 'button'
+      btn.dataset.open = 'kp'
+      btn.dataset.place = 'constructor'
+      btn.dataset.model = code
+      btn.dataset.title = title
+      btn.dataset.config = text
+      btn.dataset.configRows = JSON.stringify(rows)
+    }
+    actions.append(kp, talk)
+    aside.replaceChildren(
+      el('p', 'cfg__label', 'Ваша конфигурация'),
+      el('p', 'cfg__code', code),
+      list,
+      el('p', 'cfg__discount', 'Скидка 3% при заказе этой комплектации до 31 декабря 2026 года'),
+      actions,
+    )
+  }
+
+  const changed = (key) => {
+    normalize(state[current.id])
+    refresh()
+    renderSummary()
+    if (!reported) {
+      reported = true
+      track('configurator_start', { type: current.id, step: key })
+    }
+  }
+
+  const restricted = (key) => current.id === 'trailer' && (key in RULES || key in OPTION_RULES)
+
+  /** Закрыт ли вариант при текущем состоянии. */
+  const isOff = (key, option) => {
+    if (!restricted(key)) return false
+    const s = state[current.id]
+    const list = RULES[key]?.(s)
+    if (list && !list.includes(option)) return true
+    const rule = OPTION_RULES[key]?.[option]
+    return Boolean(rule) && !rule(s)
+  }
+
+  /** Если выбранное значение стало недоступным, берём первое допустимое. */
+  function normalize(s) {
+    for (const key of Object.keys(LIMITS)) {
+      const max = LIMITS[key](s)
+      if (max !== null && s[key] > max) s[key] = max
+    }
+    for (const key of Object.keys(RULES)) {
+      const list = RULES[key](s)
+      if (list && !list.includes(s[key])) s[key] = list[0]
+    }
+    for (const [key, rules] of Object.entries(OPTION_RULES)) {
+      s[key] = s[key].filter((option) => !rules[option] || rules[option](s))
+    }
+  }
+
+  /** Закрывает недоступные варианты и обновляет подсказки. */
+  function refresh() {
+    if (current.id !== 'trailer') return
+    const s = state.trailer
+    for (const key of Object.keys(LIMITS)) {
+      const ref = refs[key]
+      if (!ref) continue
+      const max = LIMITS[key](s) ?? ref.step.max
+      ref.input.max = max
+      ref.input.value = s[key]
+      ref.out.textContent = `${s[key]} ${ref.step.unit}`
+      ref.input.style.setProperty(
+        '--fill',
+        `${((s[key] - ref.step.min) / (max - ref.step.min)) * 100}%`,
+      )
+      ref.scale.lastChild.textContent = `${max} ${ref.step.unit}`
+    }
+    for (const key of Object.keys(RULES)) {
+      const ref = refs[key]
+      if (!ref) continue
+      const list = RULES[key](s)
+      for (const [option, node] of ref.options) {
+        const off = Boolean(list) && !list.includes(option)
+        node.label.classList.toggle('is-disabled', off)
+        node.input.setAttribute('aria-disabled', String(off))
+        node.input.checked = s[key] === option
+      }
+    }
+    for (const [key, rules] of Object.entries(OPTION_RULES)) {
+      const ref = refs[key]
+      if (!ref) continue
+      for (const [option, node] of ref.options) {
+        const off = Boolean(rules[option]) && !rules[option](s)
+        node.label.classList.toggle('is-disabled', off)
+        node.input.setAttribute('aria-disabled', String(off))
+        node.input.checked = s[key].includes(option)
+      }
+    }
+  }
+
+  const renderStep = (step, index) => {
+    const s = state[current.id]
+    const wide = step.type === 'multi' || ['purpose', 'volume'].includes(step.key)
+    const set = el('fieldset', wide ? 'cfg__step cfg__step--wide' : 'cfg__step')
+    const legend = el('legend', 'cfg__legend')
+    legend.append(el('span', 'cfg__n', String(index + 1).padStart(2, '0')), step.title)
+    set.append(legend)
+
+    if (step.type === 'range') {
+      const out = el('output', 'cfg__out', `${s[step.key]} ${step.unit}`)
+      const input = el('input', 'cfg__range')
+      Object.assign(input, {
+        type: 'range',
+        min: step.min,
+        max: step.max,
+        step: step.step ?? 1,
+        value: s[step.key],
+      })
+      input.setAttribute('aria-label', step.title)
+      input.addEventListener('input', () => {
+        s[step.key] = Number(input.value)
+        out.textContent = `${input.value} ${step.unit}`
+        input.style.setProperty(
+          '--fill',
+          `${((input.value - input.min) / (input.max - input.min)) * 100}%`,
+        )
+        changed(step.key)
+      })
+      input.style.setProperty(
+        '--fill',
+        `${((s[step.key] - step.min) / (step.max - step.min)) * 100}%`,
+      )
+      const scale = el('div', 'cfg__scale')
+      scale.append(
+        el('span', '', `${step.min} ${step.unit}`),
+        el('span', '', `${step.max} ${step.unit}`),
+      )
+      set.append(out, input, scale)
+      if (step.key in LIMITS) refs[step.key] = { input, out, scale, step }
+      return set
+    }
+
+    const group = el('div', 'cfg__opts')
+    // Колонки по числу вариантов; длинные подписи идут в один столбец
+    const longest = Math.max(...step.options.map((o) => o.length))
+    const cols = wide
+      ? Math.min(step.options.length, step.type === 'multi' ? 4 : 3)
+      : longest > 18
+        ? 1
+        : Math.min(step.options.length, 4)
+    group.style.setProperty('--cols', String(cols))
+    const options = new Map()
+    for (const option of step.options) {
+      const label = el('label', 'opt')
+      const input = el('input')
+      input.type = step.type === 'multi' ? 'checkbox' : 'radio'
+      input.name = `${current.id}-${step.key}`
+      input.value = option
+      input.checked = step.type === 'multi' ? s[step.key].includes(option) : s[step.key] === option
+      label.addEventListener('click', (event) => {
+        if (isOff(step.key, option)) event.preventDefault()
+      })
+      input.addEventListener('change', () => {
+        if (step.type === 'multi') {
+          s[step.key] = [...group.querySelectorAll('input:checked')].map((i) => i.value)
+        } else {
+          s[step.key] = option
+        }
+        changed(step.key)
+      })
+      label.append(input, el('span', 'opt__text', option))
+      group.append(label)
+      options.set(option, { label, input })
+    }
+    set.append(group)
+    if (restricted(step.key)) refs[step.key] = { options }
+    return set
+  }
+
+  const renderSteps = () => {
+    form.replaceChildren(...current.steps.map(renderStep))
+    normalize(state[current.id])
+    refresh()
+    renderSummary()
+  }
+
+  for (const cfg of CONFIGURATORS) {
+    const tab = el('button', 'cfg__tab', cfg.tab)
+    tab.type = 'button'
+    tab.setAttribute('role', 'tab')
+    tab.addEventListener('click', () => {
+      current = cfg
+      for (const t of tabs.children) t.setAttribute('aria-selected', String(t === tab))
+      renderSteps()
+    })
+    tab.setAttribute('aria-selected', String(cfg === current))
+    tabs.append(tab)
+  }
+  renderSteps()
+}

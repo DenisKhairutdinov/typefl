@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "ClaudeInChromeDomain(127.0.0.1:5199)",
+      "mcp__claude-in-chrome__tabs_create_mcp",
+      "ClaudeInChromeDomain(typefl.ru)",
+      "ClaudeInChromeDomain(www.awwwards.com)",
+      "ClaudeInChromeDomain(127.0.0.1:5444)"
+    ]
+  }
+}
