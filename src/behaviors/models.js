@@ -206,6 +206,36 @@ function addSwipe(target, onStep) {
   )
   target.addEventListener('touchcancel', () => (mode = ''), { passive: true })
 }
+/** Экономный режим или медленная сеть: заранее ничего не качаем. */
+const saveData = () => {
+  const link = navigator.connection
+  return Boolean(link?.saveData) || /(^|-)2g$/.test(link?.effectiveType ?? '')
+}
+
+/**
+ * Подгружает все фото модели очередью, по два за раз: ближние к показанному раньше, дальние позже.
+ * Картинки грузятся тем же размером, что и на странице (тот же srcset и sizes), поэтому потом
+ * браузер берёт их из кэша, и листание не ждёт сети.
+ */
+function preloadPhotos(names, sizes, current = 0) {
+  if (saveData()) return
+  const order = names
+    .map((name, index) => ({ name, distance: Math.abs(index - current) }))
+    .filter((item) => item.distance > 0)
+    .sort((a, b) => a.distance - b.distance)
+  const queue = order.map((item) => item.name)
+  const keep = (preloadPhotos.keep ??= [])
+  const next = () => {
+    const name = queue.shift()
+    if (!name) return
+    const image = new Image()
+    keep.push(image)
+    image.onload = image.onerror = next
+    setSource(image, name, sizes)
+  }
+  next()
+  next()
+}
 /** Заранее подгружает соседние фото, чтобы листание не ждало сети. */
 function warmNeighbours(buttons, button) {
   const list = [...buttons]
@@ -242,7 +272,23 @@ export function initStageThumbs(root) {
     choose(buttons[(at + delta + buttons.length) % buttons.length], delta)
   }
 
+  // Когда до карточки осталось меньше экрана, все её фото начинают грузиться заранее
+  const preloader = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue
+        preloader.unobserve(entry.target)
+        const names = [...entry.target.querySelectorAll('[data-stage-thumb]')].map(
+          (button) => button.dataset.stageThumb,
+        )
+        preloadPhotos(names, CARD_SIZES, 0)
+      }
+    },
+    { rootMargin: '900px 0px' },
+  )
+
   for (const stage of root.querySelectorAll('[data-stage]')) {
+    preloader.observe(stage)
     const host = stage.querySelector('[data-stage-photo]')?.parentElement
     if (host && stage.querySelectorAll('[data-stage-thumb]').length > 1) {
       addArrows(host, (delta) => step(stage, delta))
@@ -396,6 +442,7 @@ export function initModels(root) {
         : []),
     )
     showPhoto(model.photo, title, undefined, true)
+    preloadPhotos([model.photo, ...(model.gallery ?? [])], main.dataset.sizes ?? CARD_SIZES, 0)
 
     const kp = $('kp')
     // В заявку уходит полное название модели, а не одна аббревиатура
