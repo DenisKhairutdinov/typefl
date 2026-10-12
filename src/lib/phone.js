@@ -120,6 +120,16 @@ export function initPhoneInputs(root) {
     render(input, false)
   })
 
+  // После отправки форма очищается, и галочка «номер верный» с прежнего ввода не должна остаться
+  root.addEventListener('reset', (event) => {
+    setTimeout(() => {
+      for (const input of event.target.querySelectorAll('input[name="phone"]')) {
+        delete input.dataset.last
+        render(input, false)
+      }
+    }, 0)
+  })
+
   root.addEventListener(
     'blur',
     (event) => {
