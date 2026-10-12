@@ -142,6 +142,34 @@ function addArrows(host, onStep) {
   }
 }
 
+/** Смахивание в сторону листает фото: влево следующее, вправо предыдущее. */
+function addSwipe(target, onStep) {
+  let startX = 0
+  let startY = 0
+  let single = false
+  target.addEventListener(
+    'touchstart',
+    (event) => {
+      single = event.touches.length === 1
+      startX = event.touches[0].clientX
+      startY = event.touches[0].clientY
+    },
+    { passive: true },
+  )
+  target.addEventListener(
+    'touchend',
+    (event) => {
+      if (!single) return
+      single = false
+      const dx = event.changedTouches[0].clientX - startX
+      const dy = event.changedTouches[0].clientY - startY
+      // Горизонтальное движение, а не вертикальная прокрутка страницы
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) onStep(dx < 0 ? 1 : -1)
+    },
+    { passive: true },
+  )
+}
+
 /** Заранее подгружает соседние фото, чтобы листание не ждало сети. */
 function warmNeighbours(buttons, button) {
   const list = [...buttons]
@@ -182,6 +210,7 @@ export function initStageThumbs(root) {
     const host = stage.querySelector('[data-stage-photo]')?.parentElement
     if (host && stage.querySelectorAll('[data-stage-thumb]').length > 1) {
       addArrows(host, (delta) => step(stage, delta))
+      addSwipe(host, (delta) => step(stage, delta))
     }
   }
 
@@ -296,6 +325,7 @@ export function initModels(root) {
     )
   }
   addArrows(main.parentElement, stepPhoto)
+  addSwipe(main.parentElement, stepPhoto)
   dialog.addEventListener('keydown', (event) => {
     if (event.target.closest('input, textarea, select')) return
     if (event.key === 'ArrowRight') stepPhoto(1)
