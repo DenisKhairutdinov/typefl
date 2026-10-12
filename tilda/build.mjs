@@ -71,6 +71,8 @@ const headKeep = head
   .replace(/<title>[\s\S]*?<\/title>\s*/g, '')
   .replace(/<meta\s+name="description"[\s\S]*?\/>\s*/g, '')
   .replace(/<link rel="canonical"[^>]*>\s*/g, '')
+  // Манифест с адреса хранилища браузер отвергает (start_url другого домена), в Тильде он не нужен
+  .replace(/<link rel="manifest"[^>]*>\s*/g, '')
   .replace(/<script type="module" src="\/src\/main\.js"><\/script>\s*/g, '')
 
 const headFile = `<!-- Вставка в «Настройки сайта → Ещё → HTML-код для вставки внутрь HEAD». Сгенерировано tilda/build.mjs, руками не править. -->

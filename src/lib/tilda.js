@@ -44,28 +44,41 @@ function fill(input, value) {
 
 const visible = (node) => Boolean(node) && getComputedStyle(node).display !== 'none'
 
-/** Ждёт ответа Тильды: окно успеха, ошибка или время вышло. */
+/** Текст видимых сообщений об ошибке в форме Тильды: проверка полей или сбой отправки. */
+const errorText = (root) =>
+  [...root.querySelectorAll('.js-errorbox-all .t-form__errorbox-item, .t-input-error')]
+    .filter(visible)
+    .map((node) => node.textContent.trim())
+    .filter(Boolean)
+    .join('; ')
+
+/**
+ * Ждёт ответа Тильды: окно успеха, ошибка или время вышло. Состояние опрашивается, а не только
+ * отслеживается: Тильда меняет его по-разному (классы, стили, вставка узлов). До отправки
+ * ничего не проверяется, иначе заранее видимый контейнер ошибок дал бы ложную ошибку.
+ */
 function waitForResult(form) {
   const root = form.closest('.t-rec') ?? form
   const success = () => visible(root.querySelector('.js-successbox, .t-form__successbox'))
-  const failure = () => visible(root.querySelector('.js-errorbox-all, .t-form__errorbox-middle'))
   return new Promise((resolve, reject) => {
-    const finish = (done, value) => {
-      observer.disconnect()
-      clearTimeout(timer)
-      done(value)
-    }
-    const check = () => {
-      if (success()) finish(resolve)
-      else if (failure()) finish(reject, new Error('Тильда вернула ошибку'))
-    }
-    const observer = new MutationObserver(check)
-    observer.observe(root, { subtree: true, childList: true, attributes: true })
-    const timer = setTimeout(() => finish(reject, new Error('Тильда не ответила')), TIMEOUT)
-    check()
+    const started = Date.now()
+    const timer = setInterval(() => {
+      if (success()) {
+        clearInterval(timer)
+        resolve()
+        return
+      }
+      const message = errorText(root)
+      if (message) {
+        clearInterval(timer)
+        reject(new Error(`Тильда: ${message}`))
+      } else if (Date.now() - started > TIMEOUT) {
+        clearInterval(timer)
+        reject(new Error('Тильда не ответила'))
+      }
+    }, 150)
   })
 }
-
 /** Возвращает форму Тильды в исходное состояние, чтобы ею можно было воспользоваться снова. */
 function reset(form) {
   const root = form.closest('.t-rec') ?? form
