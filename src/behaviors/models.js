@@ -76,6 +76,8 @@ function swapPhoto(img, name, alt, dir = 0, force = false) {
     layer.dataset.dir = String(dir)
     layer.alt = ''
     layer.decoding = 'async'
+    // Клон наследует loading="lazy": слой подгружался бы с задержкой и появлялся посреди перехода
+    layer.loading = 'eager'
     layer.setAttribute('aria-hidden', 'true')
     layer.src = url
     // Быстрые переключения не обрываем: новое фото ложится поверх прежних слоёв
@@ -86,6 +88,15 @@ function swapPhoto(img, name, alt, dir = 0, force = false) {
     ;(img._last ?? img).after(layer)
     img._last = layer
     if (!busy) img.dataset.leaving = String(dir)
+    // Клон скопировал transform, который прокрутка двигает у основного фото: пока слой жив,
+    // повторяем его каждый кадр, иначе при уходе слоя картинка «подпрыгивает»
+    let syncing = true
+    const follow = () => {
+      if (!syncing || !layer.isConnected) return
+      layer.style.transform = img.style.transform
+      requestAnimationFrame(follow)
+    }
+    requestAnimationFrame(follow)
     const finish = () => {
       if (img._last !== layer) return
       img._last = null
@@ -93,9 +104,18 @@ function swapPhoto(img, name, alt, dir = 0, force = false) {
       img.src = url
       if (alt !== undefined) img.alt = alt
       const done = () => {
-        delete img.dataset.leaving
-        img.parentNode.querySelectorAll(':scope > .photo-incoming').forEach((node) => node.remove())
-        release()
+        // Декодирование закончилось, но на экран новое фото попадёт на следующем кадре. Уберёшь слой
+        // раньше — на кадр мелькнёт прежнее фото. Ждём два кадра.
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            syncing = false
+            delete img.dataset.leaving
+            img.parentNode
+              .querySelectorAll(':scope > .photo-incoming')
+              .forEach((node) => node.remove())
+            release()
+          }),
+        )
       }
       if (img.decode)
         Promise.race([img.decode().catch(() => {}), new Promise((r) => setTimeout(r, 300))]).then(
