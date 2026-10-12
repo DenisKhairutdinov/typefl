@@ -95,6 +95,9 @@ function swapPhoto(img, name, alt, dir = 0) {
 
 const HOVER_DELAY = 130
 
+/** Пауза между шагами стрелок: примерно длина перехода фото. */
+const STEP_COOLDOWN = 450
+
 /** Направление перехода между миниатюрами: вперёд, если новая правее выбранной. */
 function directionOf(buttons, target) {
   const list = [...buttons]
@@ -146,15 +149,39 @@ export function initStageThumbs(root) {
     warmNeighbours(buttons, button)
   }
 
-  /** Соседнее фото по кругу. */
-  const step = (stage, delta) => {
+  /** Сдвиг по кругу на delta фото. */
+  const move = (stage, delta) => {
     const buttons = [...stage.querySelectorAll('[data-stage-thumb]')]
     if (buttons.length < 2) return
     const at = Math.max(
       0,
       buttons.findIndex((b) => b.getAttribute('aria-pressed') === 'true'),
     )
-    choose(buttons[(at + delta + buttons.length) % buttons.length], delta)
+    const to = (((at + delta) % buttons.length) + buttons.length) % buttons.length
+    if (to !== at) choose(buttons[to], Math.sign(delta))
+  }
+
+  /**
+   * Стрелки и клавиатура: первый шаг идёт сразу, остальные за время перехода копятся
+   * и выполняются одним сдвигом. Так зажатая стрелка или частые клики не запускают
+   * десяток шторок подряд.
+   */
+  const queued = new WeakMap()
+  const step = (stage, delta) => {
+    const state = queued.get(stage) ?? { busy: false, pending: 0 }
+    queued.set(stage, state)
+    if (state.busy) {
+      state.pending += delta
+      return
+    }
+    state.busy = true
+    move(stage, delta)
+    setTimeout(() => {
+      state.busy = false
+      const rest = state.pending
+      state.pending = 0
+      if (rest) step(stage, rest)
+    }, STEP_COOLDOWN)
   }
 
   for (const stage of root.querySelectorAll('[data-stage]')) {
