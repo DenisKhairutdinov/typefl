@@ -1,6 +1,6 @@
 import { LEAD_ENDPOINT } from '../config.js'
 import { initPhoneInputs, isPhoneValid } from '../lib/phone.js'
-import { hasTildaForm, sendViaTilda } from '../lib/tilda.js'
+import { hasTildaForm, labelTildaForm, sendViaTilda } from '../lib/tilda.js'
 import { track } from '../lib/track.js'
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -168,6 +168,7 @@ function initFieldChecks(root) {
 export function initForms(root) {
   initPhoneInputs(root)
   initFieldChecks(root)
+  labelTildaForm()
   const dialog = root.querySelector('[data-dialog="kp"]')
   const thanks = root.querySelector('[data-dialog="thanks"]')
   const title = dialog.querySelector('[data-dialog-title]')

@@ -25,7 +25,8 @@ export function initPpu(root) {
       node.append(info)
     } else {
       node.tabIndex = 0
-      node.setAttribute('role', 'button')
+      // У элемента списка роль button недопустима: читалка перестала бы считать его пунктом списка
+      if (!node.matches('li')) node.setAttribute('role', 'button')
     }
   }
 

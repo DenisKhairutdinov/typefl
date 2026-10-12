@@ -192,3 +192,16 @@ export async function sendViaTilda(values) {
     setTimeout(() => reset(form), 300)
   }
 }
+
+/**
+ * У чекбокса в форме Тильды нет подписи (его текст выключен в блоке), а проверка доступности
+ * требует имя у каждого поля. Форма скрыта, поэтому подпись задаём сами.
+ */
+export function labelTildaForm() {
+  const form = tildaForm()
+  if (!form) return
+  const consent = fields(form).consent
+  if (consent && !consent.getAttribute('aria-label')) {
+    consent.setAttribute('aria-label', 'Согласие на обработку персональных данных')
+  }
+}

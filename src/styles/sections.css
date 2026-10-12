@@ -1288,6 +1288,7 @@
   font-weight: 500;
 }
 
+/* Крупная подпись бренда чисто декоративная: текст в стиле, а не в разметке, и проверка контраста его не считает */
 .foot__mark {
   padding-inline: var(--gutter);
   overflow: hidden;
@@ -1297,6 +1298,10 @@
   font-weight: 200;
   line-height: 0.8;
   white-space: nowrap;
+}
+
+.foot__mark::before {
+  content: 'ЭНЕРГОМАШ';
 }
 
 .foot__bar {

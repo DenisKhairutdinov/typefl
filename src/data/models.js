@@ -152,12 +152,12 @@ export const photoUrl = (name) =>
   name.includes('.') ? `${BASE}photos/${name}` : `${BASE}photos/${name}.webp`
 
 /**
- * Два размера одного фото: на телефоне браузер берёт лёгкий 1200 px, на широком экране и
+ * Три размера одного фото: на узком телефоне браузер берёт 640 px, на широком 1200 px, на ретине и
  * при высокой плотности пикселей полный 2400 px. Адрес лёгкой версии: имя-1200.webp.
  */
 export const photoSrcset = (name) => {
   const full = photoUrl(name)
-  return `${full.replace('.webp', '-1200.webp')} 1200w, ${full} 2400w`
+  return `${full.replace('.webp', '-640.webp')} 640w, ${full.replace('.webp', '-1200.webp')} 1200w, ${full} 2400w`
 }
 
 /** Какую ширину займёт фото на странице: подсказка браузеру при выборе размера. */

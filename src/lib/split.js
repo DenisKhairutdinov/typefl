@@ -7,8 +7,14 @@
  * @returns {HTMLElement[]}
  */
 export function splitWords(el) {
-  const label = [...el.childNodes].map((n) => (n.nodeName === 'BR' ? ' ' : n.textContent)).join('')
-  el.setAttribute('aria-label', label.replace(/\s+/g, ' ').trim())
+  // aria-label допустим только у заголовков: у абзаца он запрещён, там слова остаются читаемыми как есть
+  const heading = /^H[1-6]$/.test(el.tagName)
+  if (heading) {
+    const label = [...el.childNodes]
+      .map((n) => (n.nodeName === 'BR' ? ' ' : n.textContent))
+      .join('')
+    el.setAttribute('aria-label', label.replace(/\s+/g, ' ').trim())
+  }
 
   // Сначала собираем слова из узлов, потом заменяем содержимое
   const words = []
@@ -47,7 +53,7 @@ export function splitWords(el) {
     }
     const mask = document.createElement('span')
     mask.className = 'w'
-    mask.setAttribute('aria-hidden', 'true')
+    if (heading) mask.setAttribute('aria-hidden', 'true')
     const inner = document.createElement('span')
     inner.className = 'w__i'
     inner.append(...word)

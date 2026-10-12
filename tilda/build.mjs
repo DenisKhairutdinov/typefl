@@ -11,11 +11,16 @@
  *   --ref=<хэш коммита>  скрипт и стили в head.html подключаются из этого коммита, а не из ветки main.
  *                        Адрес с хэшем не кэшируется как «ветка», поэтому обновление видно сразу.
  *   --head-only          vite не запускается: заново пишутся только вставки (после коммита dist).
+ *
+ * Первый экран (токены, база, кнопки, шапка и главный блок) кладётся в head прямо в разметку,
+ * а полный app.css подгружается следом, не блокируя отрисовку.
  */
 import { spawnSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+import { transform } from 'lightningcss'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const config = JSON.parse(readFileSync(join(root, 'tilda/config.json'), 'utf8'))
@@ -81,9 +86,34 @@ const headKeep = head
   .replace(/<link rel="manifest"[^>]*>\s*/g, '')
   .replace(/<script type="module" src="\/src\/main\.js"><\/script>\s*/g, '')
 
+/**
+ * Стили первого экрана для вставки в head: описания шрифтов из собранного app.css
+ * и первые четыре файла стилей (они же идут первыми в index.css), сжатые и с адресами хранилища.
+ */
+function criticalCss() {
+  const built = readFileSync(join(root, 'tilda/dist/assets/app.css'), 'utf8')
+  const fonts = (built.match(/@font-face\{[^}]*\}/g) ?? []).join('')
+  const source = ['tokens', 'base', 'controls', 'hero']
+    .map((name) => readFileSync(join(root, `src/styles/${name}.css`), 'utf8'))
+    .join('\n')
+  const targets = { chrome: 100 << 16, safari: 15 << 16, firefox: 100 << 16 }
+  const { code } = transform({
+    filename: 'critical.css',
+    code: Buffer.from(source),
+    minify: true,
+    targets,
+  })
+  const css = code.toString().replace(/url\(["']?\/(logo\.svg)["']?\)/g, `url(${base}$1)`)
+  return `${fonts}${css}`
+}
+
+const cssHref = config.cssUrl || `${pinned}assets/app.css?v=${version}`
+
 const headFile = `<!-- Вставка в «Настройки сайта → Ещё → HTML-код для вставки внутрь HEAD». Сгенерировано tilda/build.mjs, руками не править. -->
 <link rel="preconnect" href="${new URL(base).origin}" crossorigin />
-<link rel="stylesheet" href="${config.cssUrl || `${pinned}assets/app.css?v=${version}`}" />
+<style id="critical-css">${criticalCss()}</style>
+<link rel="stylesheet" href="${cssHref}" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="${cssHref}" /></noscript>
 <style>html,body,.t-records{background-color:#1a1a18!important}</style>
 ${localize(headKeep).trim()}
 <script defer src="${pinned}assets/app.js?v=${version}"></script>
