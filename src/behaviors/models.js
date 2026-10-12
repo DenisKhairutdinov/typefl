@@ -460,22 +460,6 @@ export function initModels(root) {
     })
   }
 
-  // Старые адреса страниц моделей (/cisterna-ac-10-12) открывают окно модели
-  const slug = location.pathname.match(/^\/cisterna-([a-z0-9-]+)\/?$/)?.[1]
-  const fromPath = {
-    'atz-10-12': 'atz',
-    'ac-10-12': 'ac',
-    'ppc-28': 'ppc',
-    'ppc-30': 'ppc',
-    'ppc-32': 'ppc',
-    'ppc-38': 'ppc',
-  }
-  const pathModel = byId.get(fromPath[slug] ?? slug?.replace(/-10$/, ''))
-  if (pathModel) {
-    root.querySelector(`#m-${pathModel.id}`)?.scrollIntoView({ block: 'center' })
-    requestAnimationFrame(() => open(pathModel))
-  }
-
   root.addEventListener('click', (event) => {
     const opener = event.target.closest('[data-model-open]')
     if (opener) {
