@@ -61,7 +61,7 @@ const headFile = `<!-- Вставка в «Настройки сайта → Е�
 <link rel="preconnect" href="${new URL(base).origin}" crossorigin />
 <link rel="stylesheet" href="${config.cssUrl || `${base}assets/app.css?v=${version}`}" />
 ${localize(headKeep).trim()}
-<script type="module" crossorigin src="${base}assets/app.js?v=${version}"></script>
+<script defer src="${base}assets/app.js?v=${version}"></script>
 `
 
 const headerBlock = between(body, '<a class="skip"', '</header>')
