@@ -9,6 +9,9 @@
 const FORM = '.uc-form form'
 const TIMEOUT = 20000
 
+/** Идентификатор окна капчи, которое Тильда добавляет в body. */
+const CAPTCHA_BOX = 'tildaformcaptchabox'
+
 const tildaForm = () => document.querySelector(FORM)
 
 /** Есть ли на странице форма Тильды, через которую можно отправлять заявки. */
@@ -31,7 +34,9 @@ const fields = (form) => {
 function fill(input, value) {
   if (!input) return
   if (input.type === 'checkbox') {
-    if (input.checked !== Boolean(value)) input.click()
+    // Состояние ставим напрямую и сообщаем Тильде о смене: клик по спрятанному чекбоксу ненадёжен
+    input.checked = Boolean(value)
+    for (const type of ['input', 'change']) input.dispatchEvent(new Event(type, { bubbles: true }))
     return
   }
   const proto =
@@ -64,8 +69,10 @@ function waitForResult(form) {
     form.classList.contains('js-send-form-success') ||
     visible(root.querySelector('.js-successbox, .t-form__successbox'))
   return new Promise((resolve, reject) => {
-    const started = Date.now()
+    let started = Date.now()
     const timer = setInterval(() => {
+      // Пока посетитель проходит капчу Тильды, ответа ждём без ограничения по времени
+      if (document.getElementById(CAPTCHA_BOX)) started = Date.now()
       if (success()) {
         clearInterval(timer)
         resolve()
@@ -93,6 +100,21 @@ function reset(form) {
 }
 
 /**
+ * Капча Тильды открывается на весь экран, но добавляется в конец страницы, а открытые окна сайта
+ * (dialog.showModal) лежат в верхнем слое браузера и закрывают её. Переносим капчу внутрь
+ * открытого окна: тогда она поверх и посетитель может её пройти.
+ */
+function liftCaptcha() {
+  const observer = new MutationObserver(() => {
+    const box = document.getElementById(CAPTCHA_BOX)
+    const dialog = document.querySelector('dialog[open]')
+    if (box && dialog && box.parentElement !== dialog) dialog.append(box)
+  })
+  observer.observe(document.body, { childList: true })
+  return () => observer.disconnect()
+}
+
+/**
  * Окно «Спасибо» самой Тильды скрыто стилями сайта, но пока оно «открыто», Тильда блокирует
  * прокрутку страницы. Блокировку снимаем сами, иначе страница перестала бы прокручиваться.
  */
@@ -108,6 +130,9 @@ function commentOf(values) {
   if (values.config) lines.push(`Конфигурация: ${values.config}`)
   if (values.company) lines.push(`Организация или ИНН: ${values.company}`)
   if (values.place) lines.push(`Источник заявки: ${values.place}`)
+  if (values.consent !== undefined) {
+    lines.push(`Согласие на обработку данных: ${values.consent ? 'да' : 'нет'}`)
+  }
   if (values.comment) lines.push(`Комментарий: ${values.comment}`)
   return lines.join('\n')
 }
@@ -134,7 +159,7 @@ export async function sendViaTilda(values) {
   fill(target.phone, values.phone)
   fill(target.email, values.email ?? '')
   fill(target.comment, commentOf(values))
-  fill(target.consent, true)
+  fill(target.consent, values.consent ?? true)
 
   // Если скрипты Тильды не обработали отправку, браузер сам отправил бы форму и перезагрузил страницу
   form.addEventListener(
@@ -150,6 +175,7 @@ export async function sendViaTilda(values) {
     { once: true },
   )
 
+  const stopLifting = liftCaptcha()
   const result = waitForResult(form)
   const button = form.querySelector('.t-submit, button[type="submit"], input[type="submit"]')
   if (button) button.click()
@@ -161,6 +187,7 @@ export async function sendViaTilda(values) {
     dismissPopup()
     setTimeout(dismissPopup, 400)
   } finally {
+    stopLifting()
     // Тильда показывает своё сообщение об успехе внутри спрятанной формы: убираем его до следующей заявки
     setTimeout(() => reset(form), 300)
   }

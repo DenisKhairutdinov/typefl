@@ -65,6 +65,7 @@ export async function submitLead(form, goal) {
         model: value('model'),
         config: value('config'),
         place,
+        consent: Boolean(consent?.checked),
       })
     } else {
       const response = await fetch(LEAD_ENDPOINT, { method: 'POST', body: new FormData(form) })
