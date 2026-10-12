@@ -23,6 +23,8 @@ function safely(name, init) {
 
 /** Оживляет готовую разметку страницы. */
 export function initPage() {
+  // Тильда может не задать язык страницы: подстрахуемся, чтобы читалки и поисковики знали язык
+  if (!document.documentElement.lang) document.documentElement.lang = 'ru'
   safely('hero', () => initHero(document))
   safely('configurator', () => initConfigurator(document))
   safely('models', () => initModels(document))

@@ -71,6 +71,8 @@ const headKeep = head
   .replace(/<title>[\s\S]*?<\/title>\s*/g, '')
   .replace(/<meta\s+name="description"[\s\S]*?\/>\s*/g, '')
   .replace(/<link rel="canonical"[^>]*>\s*/g, '')
+  // Open Graph у Тильды свой (из настроек страницы): дубли с нашей стороны вторую копию лишь создают
+  .replace(/<meta\s+property="og:(?:type|url|title|description|image[^"]*)"[\s\S]*?\/>\s*/g, '')
   // Манифест с адреса хранилища браузер отвергает (start_url другого домена), в Тильде он не нужен
   .replace(/<link rel="manifest"[^>]*>\s*/g, '')
   .replace(/<script type="module" src="\/src\/main\.js"><\/script>\s*/g, '')
