@@ -123,6 +123,16 @@ function addArrows(host, onStep) {
   }
 }
 
+/** Заранее подгружает соседние фото, чтобы листание не ждало сети. */
+function warmNeighbours(buttons, button) {
+  const list = [...buttons]
+  const at = list.indexOf(button)
+  if (at < 0) return
+  for (const near of [list[(at + 1) % list.length], list[(at - 1 + list.length) % list.length]]) {
+    if (near && near !== button) new Image().src = photoUrl(near.dataset.stageThumb)
+  }
+}
+
 /** Миниатюры на карточках переключают главное фото карточки. */
 export function initStageThumbs(root) {
   const choose = (button, forced) => {
@@ -133,6 +143,7 @@ export function initStageThumbs(root) {
     const dir = forced ?? directionOf(buttons, button)
     for (const b of buttons) b.setAttribute('aria-pressed', String(b === button))
     swapPhoto(img, button.dataset.stageThumb, undefined, dir)
+    warmNeighbours(buttons, button)
   }
 
   /** Соседнее фото по кругу. */
