@@ -5,6 +5,21 @@ import { track } from '../lib/track.js'
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+/** Подсвечивает поле с ошибкой и встряхивает его; подсветка уходит, когда посетитель начинает исправлять. */
+function shake(input) {
+  const box = input.closest('.field, .consent')
+  if (!box) return
+  box.classList.remove('is-shake')
+  // Перезапуск анимации: без чтения размеров повторное добавление класса её не запустит
+  void box.offsetWidth
+  box.classList.add('is-shake')
+  box.addEventListener('animationend', () => box.classList.remove('is-shake'), { once: true })
+  if (box.classList.contains('field')) {
+    box.classList.add('field--invalid')
+    input.addEventListener('input', () => box.classList.remove('field--invalid'), { once: true })
+  }
+}
+
 /**
  * Проверяет форму и отправляет заявку.
  *
@@ -24,6 +39,7 @@ export async function submitLead(form, goal) {
   if (!name.value.trim()) {
     say('Напишите, как к вам обращаться.', 'error')
     name.focus()
+    shake(name)
     return
   }
   if (!isPhoneValid(phone.value)) {
@@ -32,17 +48,20 @@ export async function submitLead(form, goal) {
       'error',
     )
     phone.focus()
+    shake(phone)
     return
   }
   if (email.value.trim() && !EMAIL.test(email.value.trim())) {
     say('Проверьте адрес почты или оставьте поле пустым.', 'error')
     email.focus()
+    shake(email)
     return
   }
   const consent = form.elements.namedItem('consent')
   if (consent && !consent.checked) {
     say('Подтвердите согласие на обработку персональных данных.', 'error')
     consent.focus()
+    shake(consent)
     return
   }
   const viaTilda = hasTildaForm()

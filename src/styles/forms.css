@@ -748,6 +748,48 @@
   display: none;
 }
 
+/* Поле с ошибкой дрожит: затухающие движения влево и вправо */
+@keyframes shake {
+  0%,
+  100% {
+    translate: 0;
+  }
+
+  15% {
+    translate: -9px;
+  }
+
+  30% {
+    translate: 8px;
+  }
+
+  45% {
+    translate: -6px;
+  }
+
+  60% {
+    translate: 5px;
+  }
+
+  75% {
+    translate: -3px;
+  }
+
+  90% {
+    translate: 2px;
+  }
+}
+
+.is-shake {
+  animation: shake 0.5s var(--ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-shake {
+    animation: none;
+  }
+}
+
 .field--invalid .field__input {
   outline: 1px solid var(--accent);
   outline-offset: 0;
