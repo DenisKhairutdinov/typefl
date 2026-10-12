@@ -9,17 +9,29 @@ import { initNav } from './behaviors/nav.js'
 import { initPpu } from './behaviors/ppu.js'
 import { initZones } from './behaviors/zones.js'
 
+/**
+ * Запускает один модуль. Сбой в нём не должен останавливать остальные:
+ * в Тильде шапка, главная и подвал вставляются отдельно, и части страницы может не быть.
+ */
+function safely(name, init) {
+  try {
+    init()
+  } catch (error) {
+    console.error(`Модуль «${name}» не запустился:`, error)
+  }
+}
+
 /** Оживляет готовую разметку страницы. */
 export function initPage() {
-  initHero(document)
-  initConfigurator(document)
-  initModels(document)
-  initStageThumbs(document)
-  initForms(document)
-  initPpu(document)
-  initLegal(document)
-  initCounters(document)
-  initMotion()
-  initNav(document)
-  initZones(document)
+  safely('hero', () => initHero(document))
+  safely('configurator', () => initConfigurator(document))
+  safely('models', () => initModels(document))
+  safely('stageThumbs', () => initStageThumbs(document))
+  safely('forms', () => initForms(document))
+  safely('ppu', () => initPpu(document))
+  safely('legal', () => initLegal(document))
+  safely('counters', () => initCounters(document))
+  safely('motion', () => initMotion())
+  safely('nav', () => initNav(document))
+  safely('zones', () => initZones(document))
 }

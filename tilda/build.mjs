@@ -59,7 +59,7 @@ const headKeep = head
 
 const headFile = `<!-- Вставка в «Настройки сайта → Ещё → HTML-код для вставки внутрь HEAD». Сгенерировано tilda/build.mjs, руками не править. -->
 <link rel="preconnect" href="${new URL(base).origin}" crossorigin />
-<link rel="stylesheet" href="${base}assets/app.css?v=${version}" />
+<link rel="stylesheet" href="${config.cssUrl || `${base}assets/app.css?v=${version}`}" />
 ${localize(headKeep).trim()}
 <script type="module" crossorigin src="${base}assets/app.js?v=${version}"></script>
 `
