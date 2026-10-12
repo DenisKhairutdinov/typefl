@@ -31,7 +31,7 @@ export function initHero(root) {
   const cards = [...list.querySelectorAll('[data-model-card]')]
   const rail = root.querySelector('[data-rail-nav]')
   cards.forEach((card, i) => {
-    card.querySelector('.stage__count').firstChild.textContent = String(i + 1).padStart(2, '0')
+    card.querySelector('.stage__count').firstChild.textContent = String(i + 1)
     rail?.append(rail.querySelector(`[data-rail="${card.dataset.modelCard}"]`))
   })
 }

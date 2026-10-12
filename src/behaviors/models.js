@@ -1,7 +1,7 @@
 import Lenis from 'lenis'
 
 import { DETAILS } from '../data/model-details.js'
-import { MODELS, photoUrl } from '../data/models.js'
+import { MODELS, photoUrl, thumbUrl } from '../data/models.js'
 import { reducedMotion } from '../lib/dom.js'
 import { track } from '../lib/track.js'
 
@@ -298,7 +298,7 @@ export function initModels(root) {
             btn.dataset.photo = name
             btn.setAttribute('aria-label', `Фото ${i + 1} из ${photos.length}`)
             const img = document.createElement('img')
-            img.src = photoUrl(name)
+            img.src = thumbUrl(name)
             img.alt = ''
             img.width = 160
             img.height = 120

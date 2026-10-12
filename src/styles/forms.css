@@ -171,6 +171,7 @@
   height: auto;
   aspect-ratio: 4 / 3;
   object-fit: cover;
+  filter: var(--photo-filter);
 }
 
 .model__thumbs {
@@ -641,6 +642,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: var(--photo-filter);
 }
 
 .formdlg__facts {
@@ -1016,4 +1018,28 @@
   .model__thumbs li {
     flex: none;
   }
+}
+
+/* Окно «Спасибо» после отправки заявки */
+.dialog--thanks {
+  width: min(480px, calc(100vw - 32px));
+}
+
+.thanks {
+  display: grid;
+  gap: 18px;
+  justify-items: start;
+}
+
+.thanks__text {
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.thanks__phone {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
 }

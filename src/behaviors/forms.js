@@ -1,4 +1,4 @@
-import { LEAD_ENDPOINT, THANKS_URL } from '../config.js'
+import { LEAD_ENDPOINT } from '../config.js'
 import { initPhoneInputs, isPhoneValid } from '../lib/phone.js'
 import { track } from '../lib/track.js'
 
@@ -54,10 +54,18 @@ export async function submitLead(form, goal) {
     const response = await fetch(LEAD_ENDPOINT, { method: 'POST', body: new FormData(form) })
     if (!response.ok) throw new Error(String(response.status))
     track(goal, { place: form.elements.namedItem('place')?.value ?? form.dataset.form })
-    location.assign(THANKS_URL)
+    showThanks(form)
   } catch {
     say('Заявка не отправилась. Позвоните нам или попробуйте ещё раз.', 'error')
   }
+}
+
+/** После успешной отправки: очищает форму, закрывает окно заявки и показывает «Спасибо». */
+function showThanks(form) {
+  form.reset()
+  form.querySelector('[data-form-status]').textContent = ''
+  form.closest('dialog')?.close()
+  document.querySelector('[data-dialog="thanks"]')?.showModal()
 }
 
 /** Показывает выбранную конфигурацию: код и параметры сплошным текстом. */
@@ -89,6 +97,7 @@ function renderConfig(note, code, rowsJson) {
 export function initForms(root) {
   initPhoneInputs(root)
   const dialog = root.querySelector('[data-dialog="kp"]')
+  const thanks = root.querySelector('[data-dialog="thanks"]')
   const title = dialog.querySelector('[data-dialog-title]')
   const defaultTitle = title.textContent
 
@@ -117,8 +126,12 @@ export function initForms(root) {
       return
     }
     if (event.target.closest('[data-close]')) dialog.close()
+    if (event.target.closest('[data-thanks-close]')) thanks.close()
     // Запасной вариант лёгкого закрытия для браузеров без closedby
-    if (event.target === dialog && !('closedBy' in HTMLDialogElement.prototype)) dialog.close()
+    if (!('closedBy' in HTMLDialogElement.prototype)) {
+      if (event.target === dialog) dialog.close()
+      if (event.target === thanks) thanks.close()
+    }
   })
 
   root.addEventListener('submit', (event) => {

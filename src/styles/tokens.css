@@ -7,13 +7,16 @@
   --mute: #8a8a8a;
   --line: #c9c9c9;
   --accent: #ec8247;
+
+  /* Единая обработка фото: приглушённые цвета и плотный контраст, чтобы снимки не выбивались из тёмной палитры */
+  --photo-filter: contrast(1.08) saturate(0.78) brightness(0.95) sepia(0.06);
   --error: #ff9b8a;
   --glass: rgb(26 26 24 / 55%);
   --glass-strong: rgb(26 26 24 / 78%);
   --glass-clear: rgb(26 26 24 / 16%);
-  --bar: rgb(18 18 17 / 50%);
+  --bar: rgb(26 26 24 / 16%);
   --bar-hover: rgb(255 255 255 / 14%);
-  --bar-solid: rgb(48 48 45 / 82%);
+  --bar-solid: rgb(70 70 66 / 78%);
   --bar-shadow: 0 14px 34px -14px rgb(0 0 0 / 70%);
   --rule: rgb(255 255 255 / 18%);
   --rule-strong: rgb(255 255 255 / 40%);

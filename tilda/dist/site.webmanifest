@@ -1,0 +1,13 @@
+{
+  "name": "Энергомаш: полуприцепы-цистерны и автоцистерны",
+  "short_name": "Энергомаш",
+  "lang": "ru",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#1a1a18",
+  "theme_color": "#1a1a18",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

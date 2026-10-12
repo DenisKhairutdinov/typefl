@@ -60,7 +60,7 @@ function initBurger(root) {
   addEventListener('keydown', (event) => {
     if (event.key === 'Escape') set(false)
   })
-  matchMedia('(width >= 992px)').addEventListener('change', (event) => {
+  matchMedia('(min-width: 992px)').addEventListener('change', (event) => {
     if (event.matches) set(false)
   })
 }

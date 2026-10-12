@@ -98,11 +98,6 @@ textarea.field__input {
   resize: vertical;
 }
 
-input[type='file'].field__input {
-  padding-block: 12px;
-  font-size: 0.9rem;
-}
-
 .dock {
   position: fixed;
   right: 0;

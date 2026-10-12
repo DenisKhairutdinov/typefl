@@ -8,8 +8,9 @@ const DOPOG = 'Соответствие ДОПОГ'
 const ARSHIN = 'Сертификат поверки в АРШИН'
 const SUBSIDY = 'Субсидия Минпромторга'
 
-const TRUCK_SPECS = (pump, flow, volume) => [
+const TRUCK_SPECS = (pump, flow, volume, sections) => [
   ['Объём цистерны', volume],
+  ...(sections ? [['Секции', sections]] : []),
   ['Шасси', 'КАМАЗ-43118 (6х6) / 65115 (6х4)'],
   ['Насос', pump],
   ['Выработка', flow],
@@ -28,9 +29,14 @@ const TRAILER_SPECS = [
   ['Форма цистерны', step('shape').options.join(' / ').toLowerCase()],
 ]
 
-const TRAILER_PHOTOS = ['ppc28', 'ppc30', 'ppc32', 'ppc38', 'ship-ppc32', 'ship-ppc30']
+/** Фото лежат в public/photos/<модель>: cover.webp и пронумерованные 2.webp, 3.webp и т. д. */
+const PHOTO_COUNT = { ac: 6, atz: 8, acn: 3, akn: 6, acv: 3, acpt: 3, ppc: 6, ppcn: 9 }
+const photosOf = (id) => [
+  `${id}/cover`,
+  ...Array.from({ length: PHOTO_COUNT[id] - 1 }, (_, i) => `${id}/${i + 2}`),
+]
 
-const trailer = (id, code, kind, photo, options) => ({
+const trailer = (id, code, kind, options) => ({
   id,
   group: 'trailer',
   kind,
@@ -38,8 +44,8 @@ const trailer = (id, code, kind, photo, options) => ({
   badges: [SUBSIDY, DOPOG, ARSHIN],
   options,
   specs: TRAILER_SPECS,
-  photo,
-  gallery: TRAILER_PHOTOS.filter((x) => x !== photo),
+  photo: photosOf(id)[0],
+  gallery: photosOf(id).slice(1),
 })
 
 export const MODELS = [
@@ -49,14 +55,10 @@ export const MODELS = [
     kind: 'Автоцистерна для топлива',
     code: 'АЦ',
     badges: [DOPOG, ARSHIN],
-    options: [
-      'Количество секций до 3',
-      'Алюминиевые крылья',
-      'Установка доп. оборудования под ваши задачи',
-    ],
-    specs: TRUCK_SPECS('СВН-80А', '583 л/мин', '10–22 м³'),
-    photo: 'ac',
-    gallery: ['atz', 'atz-2', 'atz-3', 'ship-atz'],
+    options: ['Алюминиевые крылья', 'Установка доп. оборудования под ваши задачи'],
+    specs: TRUCK_SPECS('СВН-80А', '583 л/мин', '10–22 м³', '1–3'),
+    photo: photosOf('ac')[0],
+    gallery: photosOf('ac').slice(1),
   },
   {
     id: 'atz',
@@ -64,14 +66,10 @@ export const MODELS = [
     kind: 'Автотопливозаправщик',
     code: 'АТЗ',
     badges: [DOPOG, ARSHIN],
-    options: [
-      'Количество секций до 3',
-      'Алюминиевые крылья',
-      'Установка доп. оборудования под ваши задачи',
-    ],
-    specs: TRUCK_SPECS('СВН-80А', '583 л/мин', '10–22 м³'),
-    photo: 'atz',
-    gallery: ['atz-2', 'atz-3', 'atz-4', 'ship-atz'],
+    options: ['Алюминиевые крылья', 'Установка доп. оборудования под ваши задачи'],
+    specs: TRUCK_SPECS('СВН-80А', '583 л/мин', '10–22 м³', '1–3'),
+    photo: photosOf('atz')[0],
+    gallery: photosOf('atz').slice(1),
   },
   {
     id: 'acn',
@@ -85,9 +83,9 @@ export const MODELS = [
       'Алюминиевые крылья',
       'Установка доп. оборудования под ваши задачи',
     ],
-    specs: TRUCK_SPECS('СЦЛ-01', '633 л/мин', '10–16 м³'),
-    photo: 'acn',
-    gallery: ['acn-2', 'acn-3', 'ship-acn'],
+    specs: TRUCK_SPECS('СЦЛ-01', '633 л/мин', '10–16 м³', '1'),
+    photo: photosOf('acn')[0],
+    gallery: photosOf('acn').slice(1),
   },
   {
     id: 'akn',
@@ -97,8 +95,8 @@ export const MODELS = [
     badges: [DOPOG, ARSHIN],
     options: ['Термоизоляция 100 мм (пенополиуретан)', 'Горловины до 2', 'Алюминиевые крылья'],
     specs: TRUCK_SPECS('КО-505', '5167 л/мин', '10–15 м³'),
-    photo: 'akn',
-    gallery: ['akn-2'],
+    photo: photosOf('akn')[0],
+    gallery: photosOf('akn').slice(1),
   },
   {
     id: 'acv',
@@ -113,8 +111,8 @@ export const MODELS = [
       'Установка доп. оборудования под ваши задачи',
     ],
     specs: TRUCK_SPECS('СВН-80А', '583 л/мин', '10–16 м³'),
-    photo: 'acv',
-    gallery: ['acpt'],
+    photo: photosOf('acv')[0],
+    gallery: photosOf('acv').slice(1),
   },
   {
     id: 'acpt',
@@ -128,25 +126,33 @@ export const MODELS = [
     ],
     options: ['Алюминиевые крылья', 'Установка доп. оборудования под ваши задачи'],
     specs: TRUCK_SPECS('1СВН-80АС', '583 л/мин', '10 м³'),
-    photo: 'acpt',
-    gallery: ['acv'],
+    photo: photosOf('acpt')[0],
+    gallery: photosOf('acpt').slice(1),
   },
   trailer(
     'ppc',
     'ППЦ',
     'Полуприцеп-цистерна для светлых нефтепродуктов',
-    'ppc32',
     EXTRAS.filter((x) => !x.startsWith('Термоизоляция')),
   ),
   trailer(
     'ppcn',
     'ППЦН',
     'Полуприцеп-цистерна для тёмных нефтепродуктов',
-    'ppc38',
     EXTRAS.filter((x) => x !== 'Узел выдачи топлива').map((x) =>
       x.startsWith('Термоизоляция') ? 'Термоизоляция 100 мм (пенополиуретан)' : x,
     ),
   ),
 ]
 
-export const photoUrl = (name) => (name.includes('.') ? `/photos/${name}` : `/photos/${name}.webp`)
+/** Корень файлов: «/» на своём сайте, адрес хранилища при встраивании в Тильду. */
+const BASE = import.meta.env.BASE_URL
+
+export const photoUrl = (name) =>
+  name.includes('.') ? `${BASE}photos/${name}` : `${BASE}photos/${name}.webp`
+
+/** Лёгкое превью для миниатюр: лежит в thumbs рядом с оригиналом. */
+export const thumbUrl = (name) => {
+  const [id, file] = name.split('/')
+  return `${BASE}photos/${id}/thumbs/${file}.webp`
+}

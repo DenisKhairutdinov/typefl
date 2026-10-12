@@ -1,6 +1,9 @@
 import { CONFIGURATORS } from '../data/configurator.js'
 import { track } from '../lib/track.js'
 
+/** Страна производителя осей: PLT российский, BPW немецкий. */
+const MAKER_FLAGS = { PLT: 'ru', BPW: 'de' }
+
 const el = (tag, className, text) => {
   const node = document.createElement(tag)
   if (className) node.className = className
@@ -286,6 +289,8 @@ export function initConfigurator(root) {
     const options = new Map()
     for (const option of step.options) {
       const label = el('label', 'opt')
+      // Производитель осей: рядом с названием флаг страны
+      if (step.key === 'maker' && option in MAKER_FLAGS) label.dataset.flag = MAKER_FLAGS[option]
       const input = el('input')
       input.type = step.type === 'multi' ? 'checkbox' : 'radio'
       input.name = `${current.id}-${step.key}`

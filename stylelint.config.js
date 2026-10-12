@@ -2,7 +2,7 @@
 export default {
   extends: ['stylelint-config-standard'],
   plugins: ['stylelint-order'],
-  ignoreFiles: ['dist/**'],
+  ignoreFiles: ['dist/**', 'tilda/dist/**'],
   rules: {
     'order/order': ['custom-properties', 'declarations', 'rules', 'at-rules'],
     // Имена классов по БЭМ: блок__элемент--модификатор

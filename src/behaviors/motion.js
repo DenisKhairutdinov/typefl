@@ -257,8 +257,8 @@ function fillStatement() {
     .timeline({
       scrollTrigger: {
         trigger: text,
-        start: 'top 80%',
-        end: 'bottom 45%',
+        start: 'top 88%',
+        end: 'bottom 70%',
         scrub: 0.6,
       },
     })
