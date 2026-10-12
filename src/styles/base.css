@@ -217,6 +217,9 @@ html.lenis body {
 
 .section {
   padding-block: var(--section);
+
+  /* Свой фон у каждой секции: страница не зависит от цвета, который задаёт внешний конструктор */
+  background: var(--ink);
 }
 
 .section--paper {

@@ -40,7 +40,10 @@ const between = (text, from, to) => {
 /** Пути от корня сайта и абсолютные адреса сайта заменяем на адрес хранилища. */
 const localize = (text) =>
   text
-    .replace(/(src|href)="\/(?!\/)(?!src\/)/g, `$1="${base}`)
+    .replace(
+      /(src|href)="\/(?=photos\/|favicon|icon-|apple-touch|site\.webmanifest|logo\.svg|og-image)/g,
+      `$1="${base}`,
+    )
     .replaceAll(`${site}photos/`, `${base}photos/`)
     .replaceAll(`${site}og-image.jpg`, `${base}og-image.jpg`)
     .replaceAll(`${site}icon-512.png`, `${base}icon-512.png`)
@@ -60,6 +63,7 @@ const headKeep = head
 const headFile = `<!-- Вставка в «Настройки сайта → Ещё → HTML-код для вставки внутрь HEAD». Сгенерировано tilda/build.mjs, руками не править. -->
 <link rel="preconnect" href="${new URL(base).origin}" crossorigin />
 <link rel="stylesheet" href="${config.cssUrl || `${base}assets/app.css?v=${version}`}" />
+<style>html,body,.t-records{background-color:#1a1a18!important}</style>
 ${localize(headKeep).trim()}
 <script defer src="${base}assets/app.js?v=${version}"></script>
 `
