@@ -39,8 +39,14 @@ function initSmoothScroll() {
   return lenis
 }
 
+/** После этого времени с начала загрузки вступительная анимация первого экрана не запускается. */
+const LATE_START = 1500
+
 /** Первый экран: фото проявляется из увеличения, заголовок поднимается по словам. */
 function introHero() {
+  // Скрипт пришёл поздно (медленная сеть): первый экран давно показан, и прятать его ради анимации
+  // значило бы заставить посетителя смотреть, как текст исчезает и появляется снова
+  if (performance.now() > LATE_START) return
   const title = document.querySelector('[data-hero="title"]')
   const words = splitWords(title)
   const photo = document.querySelector('.hero__photo')

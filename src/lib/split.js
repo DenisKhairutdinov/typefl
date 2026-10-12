@@ -7,6 +7,10 @@
  * @returns {HTMLElement[]}
  */
 export function splitWords(el) {
+  // Слова уже разбиты в разметке (главный заголовок): текст остаётся тем же узлом, который браузер показал сразу
+  const ready = [...el.querySelectorAll('.w__i')]
+  if (ready.length) return ready
+
   // aria-label допустим только у заголовков: у абзаца он запрещён, там слова остаются читаемыми как есть
   const heading = /^H[1-6]$/.test(el.tagName)
   if (heading) {
