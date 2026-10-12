@@ -1,5 +1,6 @@
 import { LEAD_ENDPOINT } from '../config.js'
 import { initPhoneInputs, isPhoneValid } from '../lib/phone.js'
+import { hasTildaForm, sendViaTilda } from '../lib/tilda.js'
 import { track } from '../lib/track.js'
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -44,18 +45,35 @@ export async function submitLead(form, goal) {
     consent.focus()
     return
   }
-  if (!LEAD_ENDPOINT) {
+  const viaTilda = hasTildaForm()
+  if (!viaTilda && !LEAD_ENDPOINT) {
     say('Отправка заявок ещё не подключена. Позвоните или напишите нам на почту.', 'error')
     return
   }
 
   say('Отправляем…', 'wait')
   try {
-    const response = await fetch(LEAD_ENDPOINT, { method: 'POST', body: new FormData(form) })
-    if (!response.ok) throw new Error(String(response.status))
-    track(goal, { place: form.elements.namedItem('place')?.value ?? form.dataset.form })
+    const place = form.elements.namedItem('place')?.value ?? form.dataset.form
+    if (viaTilda) {
+      const value = (field) => form.elements.namedItem(field)?.value.trim() ?? ''
+      await sendViaTilda({
+        name: value('name'),
+        phone: value('phone'),
+        email: value('email'),
+        comment: value('comment'),
+        company: value('company'),
+        model: value('model'),
+        config: value('config'),
+        place,
+      })
+    } else {
+      const response = await fetch(LEAD_ENDPOINT, { method: 'POST', body: new FormData(form) })
+      if (!response.ok) throw new Error(String(response.status))
+    }
+    track(goal, { place })
     showThanks(form)
-  } catch {
+  } catch (error) {
+    console.error('Заявка не отправилась:', error)
     say('Заявка не отправилась. Позвоните нам или попробуйте ещё раз.', 'error')
   }
 }

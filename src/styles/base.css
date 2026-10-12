@@ -126,6 +126,18 @@ html.lenis body {
   padding-inline: var(--gutter);
 }
 
+/* Форма Тильды, через которую уходят заявки сайта: работает, но посетителю не видна */
+.uc-form {
+  position: fixed;
+  top: 0;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .skip {
   position: fixed;
   top: 8px;
