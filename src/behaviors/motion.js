@@ -60,22 +60,28 @@ function parallaxHero() {
   gsap.to('.hero__title', { yPercent: -16, opacity: 0.5, ease: 'none', scrollTrigger: scrub })
 }
 
-/** Каждый кадр техники раскрывается на всю ширину, а фото внутри плывёт. */
+/**
+ * Каждый кадр техники раскрывается на всю ширину, фото приближается и отъезжает,
+ * а панель данных выезжает сбоку. Всё входит одной шкалой и заканчивается в одной точке,
+ * поэтому в конце кадры не «магнитятся» по очереди. Прокрутку сглаживает Lenis, а у scrub
+ * дополнительного сглаживания нет: два сглаживания подряд дают запаздывание и рывок в конце.
+ */
 function stages() {
   for (const stage of $$('[data-stage]')) {
     const frame = stage.querySelector('[data-stage-frame]')
     const photo = stage.querySelector('[data-stage-photo]')
     const panel = stage.querySelector('[data-stage-panel]')
 
-    gsap.fromTo(
-      frame,
-      { clipPath: 'inset(5% 2.5%)' },
-      {
-        clipPath: 'inset(0% 0%)',
-        ease: 'none',
-        scrollTrigger: { trigger: stage, start: 'top 95%', end: 'top 25%', scrub: true },
-      },
-    )
+    gsap
+      .timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: { trigger: stage, start: 'top 95%', end: 'top 30%', scrub: true },
+      })
+      .fromTo(frame, { clipPath: 'inset(5% 2.5%)' }, { clipPath: 'inset(0% 0%)' }, 0)
+      .fromTo(photo, { scale: 1.07 }, { scale: 1 }, 0)
+      .fromTo(panel, { xPercent: 5, opacity: 0 }, { xPercent: 0, opacity: 1 }, 0)
+
+    // Фото медленно плывёт внутри кадра, пока карточка проходит экран
     gsap.fromTo(
       photo,
       { yPercent: -3 },
@@ -83,27 +89,6 @@ function stages() {
         yPercent: 3,
         ease: 'none',
         scrollTrigger: { trigger: stage, start: 'top bottom', end: 'bottom top', scrub: true },
-      },
-    )
-    // Фото «отъезжает»: от крупного плана к полному кадру, пока карточка входит
-    gsap.fromTo(
-      photo,
-      { scale: 1.07 },
-      {
-        scale: 1,
-        ease: 'none',
-        scrollTrigger: { trigger: stage, start: 'top bottom', end: 'top 15%', scrub: 0.6 },
-      },
-    )
-    // Панель данных выезжает сбоку вслед за прокруткой и уходит обратно при возврате
-    gsap.fromTo(
-      panel,
-      { xPercent: 5, opacity: 0 },
-      {
-        xPercent: 0,
-        opacity: 1,
-        ease: 'none',
-        scrollTrigger: { trigger: stage, start: 'top 85%', end: 'top 30%', scrub: 0.6 },
       },
     )
   }
@@ -171,7 +156,7 @@ function parallaxBlocks() {
         {
           yPercent: shift,
           ease: 'none',
-          scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 0.6 },
+          scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true },
         },
       )
     }
@@ -201,7 +186,7 @@ function reveals() {
         {
           x: 0,
           ease: 'none',
-          scrollTrigger: { trigger: title, start: 'top bottom', end: 'top 40%', scrub: 0.6 },
+          scrollTrigger: { trigger: title, start: 'top bottom', end: 'top 40%', scrub: true },
         },
       )
     })
@@ -259,7 +244,7 @@ function fillStatement() {
         trigger: text,
         start: 'top 88%',
         end: 'bottom 70%',
-        scrub: 0.6,
+        scrub: true,
       },
     })
     .to(words, { opacity: 1, ease: 'none', stagger: 0.12 })
@@ -278,7 +263,7 @@ function footerMark() {
       opacity: 1,
       letterSpacing: '0em',
       ease: 'none',
-      scrollTrigger: { trigger: mark, start: 'top bottom', end: 'bottom bottom', scrub: 0.6 },
+      scrollTrigger: { trigger: mark, start: 'top bottom', end: 'bottom bottom', scrub: true },
     },
   )
 }

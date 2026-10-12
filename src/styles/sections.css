@@ -101,6 +101,7 @@
   height: 106%;
   object-fit: cover;
   filter: var(--photo-filter);
+  will-change: transform;
 }
 
 /* Виньетка и затемнение низа: фото выглядит дороже и фон под миниатюрами читается */
@@ -121,8 +122,7 @@
   left: 16px;
   z-index: 1;
   padding: 8px 12px;
-  background: var(--glass-strong);
-  backdrop-filter: blur(16px);
+  background: rgb(26 26 24 / 82%);
   font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 700;
@@ -136,6 +136,7 @@
   display: grid;
   gap: 18px;
   align-content: center;
+  will-change: transform, opacity;
   padding: clamp(18px, 2.4vw, 40px);
   background: var(--sheet);
 }
@@ -273,8 +274,7 @@
   gap: 2px;
   width: 104px;
   padding: 6px;
-  background: rgb(26 26 24 / 52%);
-  backdrop-filter: blur(10px) saturate(150%);
+  background: rgb(26 26 24 / 78%);
   opacity: 0;
   pointer-events: none;
   transform: translate(12px, -50%);
@@ -397,7 +397,6 @@
   padding: 24px;
   border: 0;
   background: var(--tint);
-  backdrop-filter: blur(10px);
 }
 
 .cfg__legend {
