@@ -381,8 +381,9 @@ export function initModels(root) {
     showPhoto(model.photo, title, undefined, true)
 
     const kp = $('kp')
-    kp.dataset.model = model.code
-    kp.dataset.title = `Получите КП на ${model.code}`
+    // В заявку уходит полное название модели, а не одна аббревиатура
+    kp.dataset.model = `${model.kind} ${model.code}`
+    kp.dataset.title = `Получить КП: ${model.kind} ${model.code}`
   }
 
   // Плавная прокрутка внутри окна: отдельный Lenis на время показа
