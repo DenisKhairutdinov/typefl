@@ -74,7 +74,7 @@ function waitForResult(form) {
         reject(new Error(`Тильда: ${message}`))
       } else if (Date.now() - started > TIMEOUT) {
         clearInterval(timer)
-        reject(new Error('Тильда не ответила'))
+        reject(new Error(`Тильда не ответила, классы формы: ${form.className}`))
       }
     }, 150)
   })
@@ -112,11 +112,31 @@ export async function sendViaTilda(values) {
   if (!form) throw new Error('Форма Тильды не найдена')
   const target = fields(form)
 
+  const found = Object.fromEntries(
+    Object.entries(target).map(([key, node]) => [key, node?.name ?? null]),
+  )
+  console.warn('[Тильда] форма', form.id, 'поля', found)
+  if (!target.name || !target.phone) throw new Error('В форме Тильды нет полей имени или телефона')
+
   fill(target.name, values.name)
   fill(target.phone, values.phone)
   fill(target.email, values.email ?? '')
   fill(target.comment, commentOf(values))
   fill(target.consent, true)
+
+  // Если скрипты Тильды не обработали отправку, браузер сам отправил бы форму и перезагрузил страницу
+  form.addEventListener(
+    'submit',
+    (event) => {
+      if (event.defaultPrevented) {
+        console.warn('[Тильда] отправку приняли скрипты Тильды')
+        return
+      }
+      event.preventDefault()
+      console.warn('[Тильда] скрипты Тильды не обработали отправку формы')
+    },
+    { once: true },
+  )
 
   const result = waitForResult(form)
   const button = form.querySelector('.t-submit, button[type="submit"], input[type="submit"]')
@@ -125,6 +145,7 @@ export async function sendViaTilda(values) {
 
   try {
     await result
+    console.warn('[Тильда] заявка принята')
   } finally {
     // Тильда показывает своё сообщение об успехе внутри спрятанной формы: убираем его до следующей заявки
     setTimeout(() => reset(form), 300)
