@@ -59,7 +59,10 @@ const errorText = (root) =>
  */
 function waitForResult(form) {
   const root = form.closest('.t-rec') ?? form
-  const success = () => visible(root.querySelector('.js-successbox, .t-form__successbox'))
+  // Тильда помечает принятую форму классом js-send-form-success; окно с сообщением может быть пустым
+  const success = () =>
+    form.classList.contains('js-send-form-success') ||
+    visible(root.querySelector('.js-successbox, .t-form__successbox'))
   return new Promise((resolve, reject) => {
     const started = Date.now()
     const timer = setInterval(() => {
@@ -86,7 +89,7 @@ function reset(form) {
   for (const box of root.querySelectorAll('.js-successbox, .t-form__successbox'))
     box.style.display = 'none'
   for (const box of root.querySelectorAll('.t-form__inputsbox')) box.style.display = ''
-  form.classList.remove('t-form_sending')
+  form.classList.remove('t-form_sending', 'js-send-form-success')
 }
 
 /** Склеивает поля, которых нет в форме Тильды, в комментарий. */
