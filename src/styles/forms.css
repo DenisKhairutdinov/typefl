@@ -1028,7 +1028,13 @@
 .thanks {
   display: grid;
   gap: 18px;
-  justify-items: start;
+  justify-items: center;
+  text-align: center;
+}
+
+/* У заголовка есть отступ справа под крестик: в центрированном окне он только сдвигает текст */
+.thanks .dialog__title {
+  padding-right: 0;
 }
 
 .thanks__text {

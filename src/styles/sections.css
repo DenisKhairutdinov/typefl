@@ -109,7 +109,6 @@
   height: 106%;
   object-fit: cover;
   filter: var(--photo-filter);
-  will-change: transform;
 }
 
 /* Виньетка и затемнение низа: фото выглядит дороже и фон под миниатюрами читается */
@@ -144,7 +143,6 @@
   display: grid;
   gap: 18px;
   align-content: center;
-  will-change: transform, opacity;
   padding: clamp(18px, 2.4vw, 40px);
   background: var(--sheet);
 }
