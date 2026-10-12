@@ -15,7 +15,12 @@ export function initHero(root) {
   root.querySelector('[data-hero="title"]').textContent = variant.title
   root.querySelector('[data-hero="lead"]').textContent = variant.lead
   const img = root.querySelector('[data-hero="photo"]')
-  if (img) img.src = photoUrl(variant.photo)
+  if (img) {
+    // srcset главного фото перекрыл бы src, поэтому для другого снимка он снимается
+    img.removeAttribute('srcset')
+    img.removeAttribute('sizes')
+    img.src = photoUrl(variant.photo)
+  }
 
   // Модели группы объявлений ставим первыми, а её раздел поднимаем наверх витрины
   const list = root.querySelector('[data-models]')

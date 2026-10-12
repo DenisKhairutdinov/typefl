@@ -57,6 +57,10 @@ const localize = (text) =>
       /(src|href)="\/(?=photos\/|favicon|icon-|apple-touch|site\.webmanifest|logo\.svg|og-image)/g,
       `$1="${base}`,
     )
+    .replace(
+      /(srcset|imagesrcset)="([^"]*)"/g,
+      (_match, attr, value) => `${attr}="${value.replaceAll('/photos/', `${base}photos/`)}"`,
+    )
     .replaceAll(`${site}photos/`, `${base}photos/`)
     .replaceAll(`${site}og-image.jpg`, `${base}og-image.jpg`)
     .replaceAll(`${site}icon-512.png`, `${base}icon-512.png`)

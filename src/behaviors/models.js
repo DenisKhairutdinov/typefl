@@ -1,7 +1,7 @@
 import Lenis from 'lenis'
 
 import { DETAILS } from '../data/model-details.js'
-import { MODELS, photoUrl, thumbUrl } from '../data/models.js'
+import { CARD_SIZES, MODELS, photoSrcset, photoUrl, thumbUrl } from '../data/models.js'
 import { reducedMotion } from '../lib/dom.js'
 import { track } from '../lib/track.js'
 
@@ -30,6 +30,13 @@ const rowsList = (rows) => {
   return dl
 }
 
+/** Подставляет оба размера фото и подсказку по ширине: браузер сам берёт нужный. */
+function setSource(node, name, sizes) {
+  node.sizes = sizes
+  node.srcset = photoSrcset(name)
+  node.src = photoUrl(name)
+}
+
 /**
  * Меняет фото. Направление dir задаёт, с какой стороны новое фото вдвигается шторкой
  * (1 вперёд, -1 назад); 0 — мягкое проявление, когда порядка нет.
@@ -39,7 +46,7 @@ function swapPhoto(img, name, alt, dir = 0, force = false) {
   // Пока идёт смена слайда, новая не запускается; force нужен при открытии окна другой модели
   if (img._busy && !force) return false
   img.dataset.name = name
-  const url = photoUrl(name)
+  const sizes = img.dataset.sizes ?? CARD_SIZES
   if (force) {
     img._last = null
     delete img.dataset.leaving
@@ -47,7 +54,7 @@ function swapPhoto(img, name, alt, dir = 0, force = false) {
   }
   // Пустое основное фото (первое открытие окна) заполняем сразу, без перехода
   if (!img.getAttribute('src')) {
-    img.src = url
+    setSource(img, name, sizes)
     if (alt !== undefined) img.alt = alt
     img._busy = false
     return true
@@ -60,7 +67,7 @@ function swapPhoto(img, name, alt, dir = 0, force = false) {
   setTimeout(release, 2500)
   const loader = new Image()
   loader.decoding = 'async'
-  loader.src = url
+  setSource(loader, name, sizes)
   // Декодируем заранее, чтобы кадр не тормозил ни на старте, ни в конце перехода
   const ready = Promise.race([
     loader.decode ? loader.decode().catch(() => {}) : Promise.resolve(),
@@ -79,7 +86,7 @@ function swapPhoto(img, name, alt, dir = 0, force = false) {
     // Клон наследует loading="lazy": слой подгружался бы с задержкой и появлялся посреди перехода
     layer.loading = 'eager'
     layer.setAttribute('aria-hidden', 'true')
-    layer.src = url
+    setSource(layer, name, sizes)
     // Быстрые переключения не обрываем: новое фото ложится поверх прежних слоёв
     const busy = Boolean(img._last)
     // Нижние слои уже закрыты верхними, лишние убираем, чтобы не копились
@@ -101,7 +108,7 @@ function swapPhoto(img, name, alt, dir = 0, force = false) {
       if (img._last !== layer) return
       img._last = null
       // Базовое фото получает картинку, пока слой ещё закрывает его, и только потом слой уходит
-      img.src = url
+      setSource(img, name, sizes)
       if (alt !== undefined) img.alt = alt
       const done = () => {
         // Декодирование закончилось, но на экран новое фото попадёт на следующем кадре. Уберёшь слой
@@ -196,7 +203,7 @@ function warmNeighbours(buttons, button) {
   const at = list.indexOf(button)
   if (at < 0) return
   for (const near of [list[(at + 1) % list.length], list[(at - 1 + list.length) % list.length]]) {
-    if (near && near !== button) new Image().src = photoUrl(near.dataset.stageThumb)
+    if (near && near !== button) setSource(new Image(), near.dataset.stageThumb, CARD_SIZES)
   }
 }
 

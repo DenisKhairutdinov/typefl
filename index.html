@@ -187,7 +187,14 @@
         ]
       }
     </script>
-    <link rel="preload" as="image" href="/photos/hero.webp" type="image/webp" />
+    <link
+      rel="preload"
+      as="image"
+      href="/photos/hero.webp"
+      imagesrcset="/photos/hero-1200.webp 1200w, /photos/hero.webp 2200w"
+      imagesizes="100vw"
+      type="image/webp"
+    />
     <script type="module" src="/src/main.js"></script>
   </head>
   <body>
@@ -245,6 +252,8 @@
           <img
             class="hero__photo"
             src="/photos/hero.webp"
+            srcset="/photos/hero-1200.webp 1200w, /photos/hero.webp 2200w"
+            sizes="100vw"
             alt="Полуприцеп-цистерна завода «Энергомаш» на нефтебазе"
             width="2200"
             height="1100"
@@ -370,6 +379,8 @@
                     <img
                       class="stage__photo"
                       src="/photos/ac/cover.webp"
+                      srcset="/photos/ac/cover-1200.webp 1200w, /photos/ac/cover.webp 2400w"
+                      sizes="(min-width: 1200px) 58vw, 100vw"
                       alt="Автоцистерна для топлива АЦ"
                       width="1680"
                       height="1260"
@@ -556,6 +567,8 @@
                     <img
                       class="stage__photo"
                       src="/photos/atz/cover.webp"
+                      srcset="/photos/atz/cover-1200.webp 1200w, /photos/atz/cover.webp 2400w"
+                      sizes="(min-width: 1200px) 58vw, 100vw"
                       alt="Автотопливозаправщик АТЗ"
                       width="1680"
                       height="1260"
@@ -778,6 +791,8 @@
                     <img
                       class="stage__photo"
                       src="/photos/acn/cover.webp"
+                      srcset="/photos/acn/cover-1200.webp 1200w, /photos/acn/cover.webp 2400w"
+                      sizes="(min-width: 1200px) 58vw, 100vw"
                       alt="Автоцистерна для нефти АЦН"
                       width="1680"
                       height="1260"
@@ -912,6 +927,8 @@
                     <img
                       class="stage__photo"
                       src="/photos/akn/cover.webp"
+                      srcset="/photos/akn/cover-1200.webp 1200w, /photos/akn/cover.webp 2400w"
+                      sizes="(min-width: 1200px) 58vw, 100vw"
                       alt="Автоцистерна вакуумная для сбора нефти АКН"
                       width="1680"
                       height="1260"
@@ -1095,6 +1112,8 @@
                     <img
                       class="stage__photo"
                       src="/photos/acv/cover.webp"
+                      srcset="/photos/acv/cover-1200.webp 1200w, /photos/acv/cover.webp 2400w"
+                      sizes="(min-width: 1200px) 58vw, 100vw"
                       alt="Автоцистерна для технической воды АЦВ"
                       width="1680"
                       height="1260"
@@ -1224,6 +1243,8 @@
                     <img
                       class="stage__photo"
                       src="/photos/acpt/cover.webp"
+                      srcset="/photos/acpt/cover-1200.webp 1200w, /photos/acpt/cover.webp 2400w"
+                      sizes="(min-width: 1200px) 58vw, 100vw"
                       alt="Автоцистерна для питьевой воды АЦПТ"
                       width="1680"
                       height="1260"
@@ -1356,6 +1377,8 @@
                     <img
                       class="stage__photo"
                       src="/photos/ppc/cover.webp"
+                      srcset="/photos/ppc/cover-1200.webp 1200w, /photos/ppc/cover.webp 2400w"
+                      sizes="(min-width: 1200px) 58vw, 100vw"
                       alt="Полуприцеп-цистерна для светлых нефтепродуктов ППЦ"
                       width="1680"
                       height="1260"
@@ -1550,6 +1573,8 @@
                     <img
                       class="stage__photo"
                       src="/photos/ppcn/cover.webp"
+                      srcset="/photos/ppcn/cover-1200.webp 1200w, /photos/ppcn/cover.webp 2400w"
+                      sizes="(min-width: 1200px) 58vw, 100vw"
                       alt="Полуприцеп-цистерна для тёмных нефтепродуктов ППЦН"
                       width="1680"
                       height="1260"
@@ -2309,7 +2334,14 @@
         <div class="model__inner">
           <div class="model__gallery">
             <div class="model__stage">
-              <img class="model__main" alt="" width="1680" height="1260" data-model-main />
+              <img
+                class="model__main"
+                alt=""
+                data-sizes="(min-width: 768px) 460px, 100vw"
+                width="1680"
+                height="1260"
+                data-model-main
+              />
             </div>
             <ul class="model__thumbs" data-model-thumbs></ul>
           </div>

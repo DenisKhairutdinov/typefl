@@ -151,6 +151,18 @@ const BASE = import.meta.env.BASE_URL
 export const photoUrl = (name) =>
   name.includes('.') ? `${BASE}photos/${name}` : `${BASE}photos/${name}.webp`
 
+/**
+ * Два размера одного фото: на телефоне браузер берёт лёгкий 1200 px, на широком экране и
+ * при высокой плотности пикселей полный 2400 px. Адрес лёгкой версии: имя-1200.webp.
+ */
+export const photoSrcset = (name) => {
+  const full = photoUrl(name)
+  return `${full.replace('.webp', '-1200.webp')} 1200w, ${full} 2400w`
+}
+
+/** Какую ширину займёт фото на странице: подсказка браузеру при выборе размера. */
+export const CARD_SIZES = '(min-width: 1200px) 58vw, 100vw'
+
 /** Лёгкое превью для миниатюр: лежит в thumbs рядом с оригиналом. */
 export const thumbUrl = (name) => {
   const [id, file] = name.split('/')
