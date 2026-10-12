@@ -153,7 +153,6 @@ export function initConfigurator(root) {
       el('p', 'cfg__label', 'Ваша конфигурация'),
       el('p', 'cfg__code', code),
       list,
-      el('p', 'cfg__discount', 'Скидка 3% при заказе этой комплектации до 31 декабря 2026 года'),
       actions,
     )
   }

@@ -582,11 +582,6 @@
   overflow-wrap: anywhere;
 }
 
-.cfg__discount {
-  color: var(--accent);
-  font-size: 0.88rem;
-}
-
 .cfg__actions {
   display: grid;
   gap: 8px;
