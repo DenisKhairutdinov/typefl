@@ -34,16 +34,30 @@ const rowsList = (rows) => {
  * Меняет фото. Направление dir задаёт, с какой стороны новое фото вдвигается шторкой
  * (1 вперёд, -1 назад); 0 — мягкое проявление, когда порядка нет.
  */
-function swapPhoto(img, name, alt, dir = 0) {
-  if (img.dataset.name === name) return
+function swapPhoto(img, name, alt, dir = 0, force = false) {
+  if (img.dataset.name === name) return true
+  // Пока идёт смена слайда, новая не запускается; force нужен при открытии окна другой модели
+  if (img._busy && !force) return false
   img.dataset.name = name
   const url = photoUrl(name)
+  if (force) {
+    img._last = null
+    delete img.dataset.leaving
+    img.parentNode.querySelectorAll(':scope > .photo-incoming').forEach((node) => node.remove())
+  }
   // Пустое основное фото (первое открытие окна) заполняем сразу, без перехода
   if (!img.getAttribute('src')) {
     img.src = url
     if (alt !== undefined) img.alt = alt
-    return
+    img._busy = false
+    return true
   }
+  img._busy = true
+  const release = () => {
+    if (img.dataset.name === name) img._busy = false
+  }
+  // Подстраховка: замок не должен остаться, даже если анимация не дошла до конца
+  setTimeout(release, 2500)
   const loader = new Image()
   loader.decoding = 'async'
   loader.src = url
@@ -81,6 +95,7 @@ function swapPhoto(img, name, alt, dir = 0) {
       const done = () => {
         delete img.dataset.leaving
         img.parentNode.querySelectorAll(':scope > .photo-incoming').forEach((node) => node.remove())
+        release()
       }
       if (img.decode)
         Promise.race([img.decode().catch(() => {}), new Promise((r) => setTimeout(r, 300))]).then(
@@ -91,12 +106,13 @@ function swapPhoto(img, name, alt, dir = 0) {
     layer.addEventListener('animationend', finish, { once: true })
     setTimeout(finish, 1200)
   })
+  return true
 }
 
 const HOVER_DELAY = 130
 
-/** Пауза между шагами стрелок: примерно длина перехода фото. */
-const STEP_COOLDOWN = 450
+/** Через сколько повторить переключение, если предыдущий слайд ещё не закончил смену. */
+const RETRY_DELAY = 120
 
 /** Направление перехода между миниатюрами: вперёд, если новая правее выбранной. */
 function directionOf(buttons, target) {
@@ -138,50 +154,28 @@ function warmNeighbours(buttons, button) {
 
 /** Миниатюры на карточках переключают главное фото карточки. */
 export function initStageThumbs(root) {
+  /** Переключает фото; false, если предыдущая смена ещё идёт и новая не запущена. */
   const choose = (button, forced) => {
     const stage = button.closest('[data-stage]')
     const img = stage?.querySelector('[data-stage-photo]')
-    if (!img) return
+    if (!img) return false
     const buttons = stage.querySelectorAll('[data-stage-thumb]')
     const dir = forced ?? directionOf(buttons, button)
+    if (!swapPhoto(img, button.dataset.stageThumb, undefined, dir)) return false
     for (const b of buttons) b.setAttribute('aria-pressed', String(b === button))
-    swapPhoto(img, button.dataset.stageThumb, undefined, dir)
     warmNeighbours(buttons, button)
+    return true
   }
 
-  /** Сдвиг по кругу на delta фото. */
-  const move = (stage, delta) => {
+  /** Соседнее фото по кругу; пока идёт смена слайда, нажатия игнорируются. */
+  const step = (stage, delta) => {
     const buttons = [...stage.querySelectorAll('[data-stage-thumb]')]
     if (buttons.length < 2) return
     const at = Math.max(
       0,
       buttons.findIndex((b) => b.getAttribute('aria-pressed') === 'true'),
     )
-    const to = (((at + delta) % buttons.length) + buttons.length) % buttons.length
-    if (to !== at) choose(buttons[to], Math.sign(delta))
-  }
-
-  /**
-   * Стрелки и клавиатура: первый шаг идёт сразу, остальные за время перехода копятся
-   * и выполняются одним сдвигом. Так зажатая стрелка или частые клики не запускают
-   * десяток шторок подряд.
-   */
-  const queued = new WeakMap()
-  const step = (stage, delta) => {
-    const state = queued.get(stage) ?? { busy: false, pending: 0 }
-    queued.set(stage, state)
-    if (state.busy) {
-      state.pending += delta
-      return
-    }
-    state.busy = true
-    move(stage, delta)
-    setTimeout(() => {
-      state.busy = false
-      const rest = state.pending
-      state.pending = 0
-      if (rest) step(stage, rest)
-    }, STEP_COOLDOWN)
+    choose(buttons[(at + delta + buttons.length) % buttons.length], delta)
   }
 
   for (const stage of root.querySelectorAll('[data-stage]')) {
@@ -211,11 +205,16 @@ export function initStageThumbs(root) {
   if (matchMedia('(hover: hover)').matches) {
     // Переключаем по наведению с небольшой задержкой, чтобы быстрый проход мышью не мелькал
     let timer = 0
+    // Если прошлый слайд ещё меняется, ждём конца смены и пробуем снова, пока курсор на миниатюре
+    const attempt = (button) => {
+      if (button.getAttribute('aria-pressed') === 'true') return
+      if (!choose(button)) timer = setTimeout(() => attempt(button), RETRY_DELAY)
+    }
     root.addEventListener('mouseover', (event) => {
       const button = event.target.closest('[data-stage-thumb]')
       clearTimeout(timer)
       if (button && button.getAttribute('aria-pressed') !== 'true') {
-        timer = setTimeout(() => choose(button), HOVER_DELAY)
+        timer = setTimeout(() => attempt(button), HOVER_DELAY)
       }
     })
     root.addEventListener('mouseout', (event) => {
@@ -272,11 +271,14 @@ export function initModels(root) {
     $('note').hidden = !details.note
   }
 
-  const showPhoto = (name, alt, forced) => {
+  /** Показывает фото; false, если предыдущая смена ещё идёт. force — при открытии другой модели. */
+  const showPhoto = (name, alt, forced, force = false) => {
     const buttons = thumbs.querySelectorAll('button')
     const target = [...buttons].find((b) => b.dataset.photo === name)
-    swapPhoto(main, name, alt, target ? (forced ?? directionOf(buttons, target)) : 0)
+    const dir = target ? (forced ?? directionOf(buttons, target)) : 0
+    if (!swapPhoto(main, name, alt, dir, force)) return false
     for (const btn of buttons) btn.setAttribute('aria-pressed', String(btn === target))
+    return true
   }
 
   /** Соседнее фото по кругу. */
@@ -346,7 +348,7 @@ export function initModels(root) {
           })
         : []),
     )
-    showPhoto(model.photo, title)
+    showPhoto(model.photo, title, undefined, true)
 
     const kp = $('kp')
     kp.dataset.model = model.code
@@ -390,11 +392,16 @@ export function initModels(root) {
   // Миниатюры в окне переключают фото и по наведению
   if (matchMedia('(hover: hover)').matches) {
     let hoverTimer = 0
+    const attempt = (thumb) => {
+      if (thumb.getAttribute('aria-pressed') === 'true') return
+      if (!showPhoto(thumb.dataset.photo))
+        hoverTimer = setTimeout(() => attempt(thumb), RETRY_DELAY)
+    }
     dialog.addEventListener('mouseover', (event) => {
       const thumb = event.target.closest('[data-photo]')
       clearTimeout(hoverTimer)
       if (thumb && thumb.getAttribute('aria-pressed') !== 'true') {
-        hoverTimer = setTimeout(() => showPhoto(thumb.dataset.photo), HOVER_DELAY)
+        hoverTimer = setTimeout(() => attempt(thumb), HOVER_DELAY)
       }
     })
     dialog.addEventListener('mouseout', (event) => {
