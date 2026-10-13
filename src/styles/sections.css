@@ -1047,7 +1047,7 @@
   transition: scale 0.6s var(--ease);
 }
 
-/* Выбранное фото отмечено белым квадратом в углу */
+/* Выбранное фото отмечено чёрным квадратом в углу, тонкая светлая кайма видна и на тёмных снимках */
 .thumb::after {
   content: '';
   position: absolute;
@@ -1055,7 +1055,8 @@
   left: 6px;
   width: 8px;
   height: 8px;
-  background: #fff;
+  background: #000;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 55%);
   scale: 0;
   transition: scale 0.4s var(--ease);
 }
