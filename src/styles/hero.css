@@ -488,4 +488,9 @@
   .top__bar {
     max-width: none;
   }
+
+  /* Плашки преимуществ не прижаты к нижнему краю первого экрана */
+  .hero__inner {
+    padding-bottom: 40px;
+  }
 }

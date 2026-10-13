@@ -100,9 +100,9 @@ textarea.field__input {
 
 .dock {
   position: fixed;
-  right: 12px;
-  bottom: max(12px, env(safe-area-inset-bottom));
-  left: 12px;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 40;
   display: grid;
   grid-template-columns: 1fr 1fr 1.6fr;
@@ -140,7 +140,7 @@ textarea.field__input {
 /* Телефон: нижняя панель не закрывает подвал */
 @media (width < 768px) {
   body {
-    padding-bottom: 80px;
+    padding-bottom: 56px;
   }
 }
 
