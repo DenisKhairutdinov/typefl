@@ -128,6 +128,7 @@
 }
 
 .top__max {
+  gap: 8px;
   padding: 8px 12px;
   border: 1px solid var(--rule-strong);
   background-image: linear-gradient(var(--white), var(--white));
@@ -493,4 +494,14 @@
   .hero__inner {
     padding-bottom: 40px;
   }
+}
+
+/* Значок сообщения у кнопки Max в шапке на десктопе */
+.top__max::before {
+  content: '';
+  flex: none;
+  width: 16px;
+  height: 16px;
+  background: currentcolor;
+  mask: var(--icon-chat) center / contain no-repeat;
 }
