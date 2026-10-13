@@ -811,7 +811,7 @@
 
 .field--valid .field__input {
   padding-right: 48px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M4 10.5 8.2 15 16 5.5' fill='none' stroke='%23d56a42' stroke-width='2.2'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M4 10.5 8.2 15 16 5.5' fill='none' stroke='%23ec8247' stroke-width='2.2'/%3E%3C/svg%3E");
   background-position: right 16px center;
   background-repeat: no-repeat;
   background-size: 20px 20px;
