@@ -265,9 +265,12 @@
 .feat {
   position: relative;
   display: grid;
-  gap: 8px;
-  align-content: space-between;
-  min-height: 168px;
+
+  /* Номер и заголовок стоят в одну строку, описание под ними на всю ширину */
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px 14px;
+  align-content: start;
+  align-items: center;
   padding: 18px 20px 20px;
   overflow: hidden;
   border: 0;
@@ -299,6 +302,7 @@
 }
 
 .feat__d {
+  grid-column: 1 / -1;
   color: var(--line);
   font-size: 0.9rem;
   line-height: 1.4;
@@ -335,6 +339,18 @@
   color: var(--line);
   font-family: var(--font-mono);
   font-size: 0.78rem;
+}
+
+/* На широком экране отметки стоят ровно в две строки: четыре и три, последняя длинная на два столбца */
+@media (width >= 992px) {
+  .hero__marks {
+    display: grid;
+    grid-template-columns: repeat(4, max-content);
+  }
+
+  .hero__marks li:last-child {
+    grid-column: span 2;
+  }
 }
 
 .hero__marks li::before {
