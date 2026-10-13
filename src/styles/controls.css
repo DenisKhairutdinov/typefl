@@ -122,6 +122,12 @@ textarea.field__input {
   text-decoration: none;
 }
 
+/* «Позвонить» и «Max» на тёмной панели: светлая подложка и белый текст, чтобы не терялись на чёрном */
+.dock__item:not(.dock__item--main) {
+  background: rgb(255 255 255 / 18%);
+  color: #fff;
+}
+
 .dock__item + .dock__item {
   border-left: 1px solid color-mix(in srgb, var(--white) 22%, transparent);
 }
