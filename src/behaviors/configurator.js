@@ -154,6 +154,11 @@ export function initConfigurator(root) {
       list,
       actions,
     )
+    // На низком экране список прокручивается внутри итога: колесо над ним не должна перехватывать
+    // плавная прокрутка страницы. Если список помещается целиком, страница листается как обычно
+    requestAnimationFrame(() => {
+      list.toggleAttribute('data-lenis-prevent', list.scrollHeight > list.clientHeight + 1)
+    })
   }
 
   const changed = (key) => {

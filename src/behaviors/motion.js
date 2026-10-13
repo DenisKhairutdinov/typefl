@@ -217,7 +217,7 @@ function reveals() {
         {
           x: 0,
           ease: 'none',
-          scrollTrigger: { trigger: title, start: 'top bottom', end: 'top 40%', scrub: true },
+          scrollTrigger: { trigger: title, start: 'top bottom', end: 'top 82%', scrub: true },
         },
       )
     })

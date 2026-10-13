@@ -512,3 +512,37 @@
 .top.is-instant .top__bar * {
   transition: none !important;
 }
+
+/* Низкий экран (ноутбук, окно браузера не на весь экран): первый экран ужимается по высоте,
+   чтобы плашки преимуществ оставались видны без прокрутки. На телефоне не действует */
+@media (width >= 768px) and (height <= 960px) {
+  .hero__title {
+    font-size: clamp(2.4rem, min(8.3vw, 13vh), 11.5rem);
+  }
+
+  .hero__inner {
+    gap: 20px;
+  }
+
+  .feat {
+    gap: 6px;
+    min-height: 0;
+    padding: 14px 18px 16px;
+  }
+
+  .feat__n {
+    font-size: clamp(2rem, 5.2vh, 4.2rem);
+  }
+}
+
+@media (width >= 768px) and (height <= 800px) {
+  .hero__inner {
+    gap: 16px;
+    padding-top: calc(var(--top) + 24px);
+  }
+
+  /* Номера плашек декоративные: на низком экране уступают место тексту */
+  .feat__n {
+    display: none;
+  }
+}
