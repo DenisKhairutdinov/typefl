@@ -337,11 +337,6 @@
   font-size: 0.78rem;
 }
 
-/* Строка документов под плашками стоит к ним ближе, чем блоки первого экрана друг к другу */
-.hero__marks--docs {
-  margin-top: calc(-0.5 * clamp(20px, 2.6vw, 36px));
-}
-
 .hero__marks li::before {
   content: '';
   display: inline-block;
@@ -526,10 +521,6 @@
 
   .hero__inner {
     gap: 20px;
-  }
-
-  .hero__marks--docs {
-    margin-top: -8px;
   }
 
   .feat {
