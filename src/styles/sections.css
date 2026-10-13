@@ -718,9 +718,13 @@
   }
 
   .cfg__summary .specs--cfg {
+    /* Строки по высоте содержимого: в ограниченной по высоте сетке они иначе сжимаются
+       и наезжают друг на друга, вместо того чтобы прокручиваться */
+    grid-auto-rows: max-content;
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
+    scrollbar-color: var(--mute) transparent;
     scrollbar-width: thin;
   }
 }
