@@ -487,8 +487,9 @@
 }
 
 @media (width >= 992px) {
+  /* На узком окне данным нужно больше места, чем фото; широкая галерея только с 1400 */
   .model__inner {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
     align-items: start;
   }
 
@@ -506,6 +507,18 @@
   .model__main {
     aspect-ratio: 4 / 3;
     max-height: calc(100svh - 32px - 112px);
+  }
+}
+
+@media (width >= 1200px) {
+  .model__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+@media (width >= 1400px) {
+  .model__inner {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
   }
 }
 

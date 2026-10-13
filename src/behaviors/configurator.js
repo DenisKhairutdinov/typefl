@@ -154,12 +154,25 @@ export function initConfigurator(root) {
       list,
       actions,
     )
-    // На низком экране список прокручивается внутри итога: колесо над ним не должна перехватывать
-    // плавная прокрутка страницы. Если список помещается целиком, страница листается как обычно
-    requestAnimationFrame(() => {
-      list.toggleAttribute('data-lenis-prevent', list.scrollHeight > list.clientHeight + 1)
-    })
   }
+
+  // На низком экране список прокручивается внутри итога. Колесо над любой частью итога листает
+  // список, пока ему есть куда ехать; дальше событие уходит плавной прокрутке страницы
+  aside.addEventListener(
+    'wheel',
+    (event) => {
+      const list = aside.querySelector('.specs--cfg')
+      if (!list || event.ctrlKey || !event.deltaY) return
+      const max = list.scrollHeight - list.clientHeight
+      if (max <= 1) return
+      const step = event.deltaMode === 1 ? event.deltaY * 32 : event.deltaY
+      if (step < 0 ? list.scrollTop <= 0 : list.scrollTop >= max - 1) return
+      event.preventDefault()
+      event.stopPropagation()
+      list.scrollTop += step
+    },
+    { passive: false },
+  )
 
   const changed = (key) => {
     normalize(state[current.id])
