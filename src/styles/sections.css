@@ -357,12 +357,12 @@
 
   position: fixed;
   top: 50%;
-  right: 12px;
+  right: 8px;
   z-index: 30;
   display: none;
   gap: 1px;
-  width: 78px;
-  padding: 4px;
+  width: 46px;
+  padding: 3px;
   background: rgb(26 26 24 / 78%);
   opacity: 0;
   pointer-events: none;
@@ -379,37 +379,22 @@
 }
 
 .rail__link {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 6px;
+  display: block;
+  padding: 6px 0;
   color: var(--text-2);
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 600;
+  text-align: center;
   text-decoration: none;
   transition:
     background-color 0.3s var(--ease),
+    box-shadow 0.3s var(--ease),
     color 0.3s var(--ease);
 }
 
 .rail__code {
-  font-size: 0.72rem;
-}
-
-.rail__link::before {
-  content: '';
-  flex: none;
-  width: 12px;
-  height: 5px;
-  background: var(--rule-strong);
-
-  /* Маркер растёт через scale: ширина в потоке постоянна, панель не меняет размер */
-  transform: scaleX(0.5);
-  transform-origin: left;
-  transition:
-    transform 0.4s var(--ease),
-    background-color 0.3s var(--ease);
+  font-size: 0.68rem;
 }
 
 .rail__link:hover {
@@ -417,14 +402,11 @@
   color: var(--white);
 }
 
+/* Текущая модель отмечена акцентной чертой слева: отдельного маркера нет, навигатор узкий */
 .rail__link.is-active {
   background: var(--tint-2);
+  box-shadow: inset 2px 0 0 var(--accent);
   color: var(--white);
-}
-
-.rail__link.is-active::before {
-  background: var(--accent);
-  transform: none;
 }
 
 @media (width >= 1400px) {
@@ -432,9 +414,9 @@
     display: grid;
   }
 
-  /* Навигатор не лежит поверх карточек: справа под него оставлена полоса */
-  .products__list {
-    padding-right: 102px;
+  /* Карточка идёт до края экрана, а навигатор лежит на её правом поле и не закрывает данные */
+  .stage__sheet {
+    padding-right: calc(clamp(10px, 1.6cqw, 34px) + 44px);
   }
 }
 
