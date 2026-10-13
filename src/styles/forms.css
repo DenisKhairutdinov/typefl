@@ -958,7 +958,7 @@
   background: color-mix(in srgb, var(--white) 14%, var(--ink));
 
   /* Серая плашка без рамки, выделяется тенью */
-  box-shadow: 0 6px 20px rgb(0 0 0 / 45%);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 22%);
 }
 
 .dialog--model > .dialog__close:hover {
