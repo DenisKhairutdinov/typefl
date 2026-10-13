@@ -11,7 +11,7 @@
   background-size: 0% 100%;
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.15;
   text-align: center;
   text-decoration: none;
@@ -120,7 +120,7 @@ textarea.field__input {
   background: transparent;
   font-family: var(--font-mono);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
   text-decoration: none;
 }
 

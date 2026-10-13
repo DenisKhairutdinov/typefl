@@ -441,7 +441,7 @@
   color: var(--line);
   font-family: var(--font-mono);
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: 500;
   transition:
     background-color 0.3s var(--ease),
     color 0.3s var(--ease);
@@ -1468,7 +1468,7 @@
   background-image: linear-gradient(var(--rule), var(--rule));
   box-shadow: none;
   color: var(--white);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .stage__cell--act .btn--line:hover {
