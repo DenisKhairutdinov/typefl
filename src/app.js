@@ -7,7 +7,6 @@ import { initModels, initStageThumbs } from './behaviors/models.js'
 import { initMotion } from './behaviors/motion.js'
 import { initNav } from './behaviors/nav.js'
 import { initPpu } from './behaviors/ppu.js'
-import { initSubsidy } from './behaviors/subsidy.js'
 import { initZones } from './behaviors/zones.js'
 
 /**
@@ -32,7 +31,6 @@ export function initPage() {
   safely('stageThumbs', () => initStageThumbs(document))
   safely('forms', () => initForms(document))
   safely('ppu', () => initPpu(document))
-  safely('subsidy', () => initSubsidy(document))
   safely('legal', () => initLegal(document))
   safely('counters', () => initCounters(document))
   safely('motion', () => initMotion())
