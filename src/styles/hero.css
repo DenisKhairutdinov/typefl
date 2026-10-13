@@ -322,6 +322,42 @@
   }
 }
 
+/* Быстрый выбор по грузу: ведёт к нужной модели или группе */
+.hero__pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  grid-column: 1 / -1;
+}
+
+.hero__pick-label {
+  margin-right: 6px;
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.chip {
+  padding: 9px 14px;
+  background: rgb(255 255 255 / 18%);
+  backdrop-filter: blur(8px) saturate(140%);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background-color 0.3s var(--ease),
+    color 0.3s var(--ease);
+}
+
+.chip:hover,
+.chip:focus-visible {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
 .hero__marks {
   display: flex;
   flex-wrap: wrap;

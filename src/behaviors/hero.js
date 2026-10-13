@@ -7,6 +7,11 @@ import { track } from '../lib/track.js'
  * Без метки и при неизвестном значении остаётся общий вариант из разметки.
  */
 export function initHero(root) {
+  root.querySelector('.hero__pick')?.addEventListener('click', (event) => {
+    const chip = event.target.closest('[data-pick]')
+    if (chip) track('hero_pick', { cargo: chip.dataset.pick })
+  })
+
   const key = new URLSearchParams(location.search).get('g') ?? ''
   const variant = HERO_VARIANTS[key]
   track('hero_variant', { g: variant ? key : 'default' })

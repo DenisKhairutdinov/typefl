@@ -298,6 +298,13 @@
               </button>
               <a class="btn btn--line btn--big" href="#constructor" data-hero-in>Конфигуратор</a>
             </div>
+            <nav class="hero__pick" aria-label="Что вы перевозите" data-hero-in>
+              <span class="hero__pick-label">Что перевозите?</span>
+              <a class="chip" href="#m-ac" data-pick="fuel">Топливо</a>
+              <a class="chip" href="#m-acn" data-pick="oil">Нефть</a>
+              <a class="chip" href="#m-acv" data-pick="water">Воду</a>
+              <a class="chip" href="#g-trailer" data-pick="trailer">Нужен полуприцеп</a>
+            </nav>
             <ul class="hero__marks" data-hero-in>
               <li>Гарантия 12 месяцев</li>
               <li>Спецификация до начала производства</li>
@@ -2059,10 +2066,36 @@
               </div>
             </dl>
           </div>
+          <div class="subcalc" data-subsidy>
+            <div class="subcalc__head">
+              <h3 class="subcalc__title">Посчитайте субсидию</h3>
+              <p class="subcalc__days" data-subsidy-days></p>
+            </div>
+            <label class="field subcalc__field">
+              <span class="field__label">Стоимость полуприцепа-цистерны, ₽</span>
+              <input
+                class="field__input"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="Например, 6 000 000"
+                data-subsidy-input
+              />
+            </label>
+            <div class="subcalc__out" aria-live="polite">
+              <p class="subcalc__sum">
+                <span data-subsidy-sum>0</span>&nbsp;<span class="rub">₽</span>
+              </p>
+              <p class="subcalc__note" data-subsidy-note>
+                Введите стоимость, и мы покажем скидку на аванс по лизингу.
+              </p>
+            </div>
+          </div>
           <button
             class="btn btn--primary btn--big"
             type="button"
             data-open="kp"
+            data-subsidy-cta
             data-place="leasing"
             data-model=""
             data-title="Рассчитаем лизинг и субсидию"
