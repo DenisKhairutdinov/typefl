@@ -6,7 +6,7 @@
   --white: #fff;
   --mute: #8a8a8a;
   --line: #c9c9c9;
-  --accent: #ec8247;
+  --accent: #e3773f;
 
   /* Единая обработка фото: приглушённые цвета и плотный контраст, чтобы снимки не выбивались из тёмной палитры */
   --photo-filter: contrast(1.08) saturate(0.78) brightness(0.95) sepia(0.06);
