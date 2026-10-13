@@ -465,9 +465,10 @@
   padding: 12px 18px;
   background: var(--tint-2);
   font-size: 0.95rem;
-  transition:
-    background-color 0.25s var(--ease),
-    color 0.25s var(--ease);
+
+  /* Без плавной смены фона: при выборе старая плитка гаснет, а новая загорается одновременно,
+     иначе на доли секунды видны оба промежуточных цвета (серый между белым и фоном) */
+  transition: none;
 }
 
 .opt:hover .opt__text {
