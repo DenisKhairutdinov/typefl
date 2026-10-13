@@ -235,6 +235,8 @@ function reveals() {
     '.subsidy',
     '.contact__info',
     '.form--panel',
+    // На телефоне покадровое раскрытие карточек отключено, вместо него лёгкое появление
+    ...(matchMedia('(max-width: 767px)').matches ? ['.stage__frame'] : []),
   ]
   const items = [...new Set(groups.flatMap((selector) => $$(selector)))]
   gsap.set(items, { opacity: 0, y: 30 })
