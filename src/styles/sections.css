@@ -1231,13 +1231,6 @@
   margin-top: 6px;
 }
 
-/* Списки Тильды получают свой левый отступ: в подвале он сбрасывается явно */
-.foot .foot__tags,
-.foot .foot__list {
-  padding: 0;
-  list-style: none;
-}
-
 .foot__tags li {
   padding: 6px 10px;
   background: var(--tint-2);
@@ -1256,6 +1249,13 @@
 .foot__list {
   display: grid;
   gap: 8px;
+}
+
+/* Списки Тильды получают свой левый отступ: в подвале он сбрасывается явно */
+.foot .foot__tags,
+.foot .foot__list {
+  padding: 0;
+  list-style: none;
 }
 
 .foot__link {
