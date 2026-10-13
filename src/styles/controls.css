@@ -106,8 +106,8 @@ textarea.field__input {
   z-index: 40;
   display: grid;
   grid-template-columns: 1fr 1fr 1.6fr;
-  background: var(--glass-strong);
-  backdrop-filter: blur(22px);
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+  backdrop-filter: blur(18px) saturate(140%);
 }
 
 .dock__item {
@@ -120,6 +120,10 @@ textarea.field__input {
   font-size: 0.78rem;
   font-weight: 700;
   text-decoration: none;
+}
+
+.dock__item + .dock__item {
+  border-left: 1px solid color-mix(in srgb, var(--white) 22%, transparent);
 }
 
 .dock__item--main {
