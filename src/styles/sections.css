@@ -274,12 +274,12 @@
 
   position: fixed;
   top: 50%;
-  right: 16px;
+  right: 12px;
   z-index: 30;
   display: none;
-  gap: 2px;
-  width: 104px;
-  padding: 6px;
+  gap: 1px;
+  width: 78px;
+  padding: 4px;
   background: rgb(26 26 24 / 78%);
   opacity: 0;
   pointer-events: none;
@@ -297,12 +297,12 @@
 
 .rail__link {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
-  padding: 8px;
+  padding: 6px;
   color: var(--text-2);
   font-family: var(--font-mono);
-  font-size: 0.76rem;
+  font-size: 0.7rem;
   font-weight: 600;
   text-decoration: none;
   transition:
@@ -311,18 +311,18 @@
 }
 
 .rail__code {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
 }
 
 .rail__link::before {
   content: '';
   flex: none;
-  width: 16px;
-  height: 6px;
+  width: 12px;
+  height: 5px;
   background: var(--rule-strong);
 
   /* Маркер растёт через scale: ширина в потоке постоянна, панель не меняет размер */
-  transform: scaleX(0.375);
+  transform: scaleX(0.5);
   transform-origin: left;
   transition:
     transform 0.4s var(--ease),
