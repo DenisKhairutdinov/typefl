@@ -854,6 +854,35 @@
   margin-top: 12px;
 }
 
+/* Доставка: короткая полоса между преимуществами и лизингом */
+.delivery {
+  background: var(--tone-2);
+}
+
+.delivery__grid {
+  display: grid;
+  gap: 32px;
+  align-items: end;
+}
+
+.delivery__head {
+  display: grid;
+  gap: 20px;
+}
+
+.delivery__body {
+  display: grid;
+  gap: 24px;
+  justify-items: start;
+}
+
+@media (width >= 992px) {
+  .delivery__grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 56px;
+  }
+}
+
 /* Контакты */
 .contact {
   position: relative;
