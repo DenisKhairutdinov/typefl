@@ -477,3 +477,15 @@
     display: none;
   }
 }
+
+/* Телефон: шапка прижата к верху и к краям экрана, без зазора */
+@media (width < 768px) {
+  .top {
+    top: 0;
+    padding-inline: 0;
+  }
+
+  .top__bar {
+    max-width: none;
+  }
+}
