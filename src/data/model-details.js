@@ -323,7 +323,7 @@ export const DETAILS = {
           ['Насос', 'КО-505 (5167 л/мин)'],
           ['Рукава', 'Ду100, 6 м, 1 шт. в пенале'],
         ],
-        FUEL_KIT(wings, chassis).map((x) => x.replace('Поверка в АРШИН', 'Поверка')),
+        FUEL_KIT(wings, chassis),
       ),
     ),
     sections: [
