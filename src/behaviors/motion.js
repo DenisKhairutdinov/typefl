@@ -331,19 +331,28 @@ export function initMotion() {
   fillStatement()
   header()
 
-  // Положения триггеров пересчитываются один раз после загрузки страницы и шрифтов. На каждую
-  // ленивую картинку пересчёт не делается: размеры у всех заданы, а пересчёт посреди прокрутки
-  // сбрасывает инерцию на телефоне. Если страница сейчас едет, пересчёт откладывается.
+  // Положения триггеров пересчитываются, когда реально изменилась высота страницы (догрузились
+  // шрифты, собрались миниатюры и конфигуратор). Без пересчёта блоки ниже по странице появлялись бы
+  // не там, где они на экране. Пересчёт посреди прокрутки сбрасывает инерцию на телефоне, поэтому
+  // он ждёт, пока страница остановится.
   let timer = 0
   let lastScroll = 0
+  let lastHeight = document.documentElement.scrollHeight
   addEventListener('scroll', () => (lastScroll = performance.now()), { passive: true })
   const refresh = () => {
     clearTimeout(timer)
     timer = setTimeout(function run() {
-      if (performance.now() - lastScroll < 300) timer = setTimeout(run, 300)
-      else ScrollTrigger.refresh()
-    }, 150)
+      if (performance.now() - lastScroll < 250) timer = setTimeout(run, 250)
+      else {
+        lastHeight = document.documentElement.scrollHeight
+        ScrollTrigger.refresh()
+      }
+    }, 120)
   }
+  const changed = () => Math.abs(document.documentElement.scrollHeight - lastHeight) > 2
   window.addEventListener('load', refresh, { once: true })
   document.fonts?.ready.then(refresh)
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(() => changed() && refresh()).observe(document.body)
+  }
 }
