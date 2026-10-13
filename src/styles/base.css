@@ -119,6 +119,12 @@ html.lenis body {
   overflow: hidden;
 }
 
+/* Страница под открытым окном на телефоне, где вместо Lenis родная прокрутка */
+html.is-locked,
+html.is-locked body {
+  overflow: hidden;
+}
+
 .wrap {
   width: 100%;
   max-width: 1560px;

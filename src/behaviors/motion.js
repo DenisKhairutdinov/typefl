@@ -7,14 +7,38 @@ import { splitWords } from '../lib/split.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
+// Адресная строка телефона прячется и показывается при прокрутке и шлёт resize. Без этой настройки каждый такой
+// resize пересчитывает все триггеры и сбрасывает инерцию: страница на ходу «упирается» в невидимую стену.
+ScrollTrigger.config({ ignoreMobileResize: true })
+
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)]
 
-/** Плавная прокрутка Lenis, согласованная с ScrollTrigger. */
+/**
+ * Прокрутка на устройствах с касанием остаётся родной: у телефона своя инерция, и подмена её
+ * собственной прокруткой даёт рывки и резкие остановки. Здесь нужна только блокировка страницы под
+ * окнами и плавный переход к якорю.
+ */
+function nativeScroll() {
+  const root = document.documentElement
+  return {
+    scrollTo: (target) => target.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+    stop: () => root.classList.add('is-locked'),
+    start: () => root.classList.remove('is-locked'),
+  }
+}
+
+/** Плавная прокрутка Lenis (колесо мыши), согласованная с ScrollTrigger; на телефоне родная. */
 function initSmoothScroll() {
-  const lenis = new Lenis({ lerp: 0.1, smoothWheel: true })
-  lenis.on('scroll', ScrollTrigger.update)
-  gsap.ticker.add((time) => lenis.raf(time * 1000))
-  gsap.ticker.lagSmoothing(0)
+  const touch = matchMedia('(pointer: coarse), (max-width: 767px)').matches
+  let lenis
+  if (touch) {
+    lenis = nativeScroll()
+  } else {
+    lenis = new Lenis({ lerp: 0.1, smoothWheel: true })
+    lenis.on('scroll', ScrollTrigger.update)
+    gsap.ticker.add((time) => lenis.raf(time * 1000))
+    gsap.ticker.lagSmoothing(0)
+  }
 
   // Якоря едут плавно и с поправкой на шапку
   document.addEventListener('click', (event) => {
@@ -23,7 +47,8 @@ function initSmoothScroll() {
     const target = document.querySelector(link.getAttribute('href'))
     if (!target) return
     event.preventDefault()
-    lenis.scrollTo(target, { offset: -12, duration: 1.4 })
+    if (touch) lenis.scrollTo(target)
+    else lenis.scrollTo(target, { offset: -12, duration: 1.4 })
   })
 
   // Пока открыто окно заявки, страница под ним не едет
@@ -306,12 +331,19 @@ export function initMotion() {
   fillStatement()
   header()
 
-  // Фото грузятся позже вёрстки: положения триггеров пересчитываем
+  // Положения триггеров пересчитываются один раз после загрузки страницы и шрифтов. На каждую
+  // ленивую картинку пересчёт не делается: размеры у всех заданы, а пересчёт посреди прокрутки
+  // сбрасывает инерцию на телефоне. Если страница сейчас едет, пересчёт откладывается.
   let timer = 0
+  let lastScroll = 0
+  addEventListener('scroll', () => (lastScroll = performance.now()), { passive: true })
   const refresh = () => {
     clearTimeout(timer)
-    timer = setTimeout(() => ScrollTrigger.refresh(), 150)
+    timer = setTimeout(function run() {
+      if (performance.now() - lastScroll < 300) timer = setTimeout(run, 300)
+      else ScrollTrigger.refresh()
+    }, 150)
   }
-  for (const img of $$('img[loading="lazy"]')) img.addEventListener('load', refresh, { once: true })
   window.addEventListener('load', refresh, { once: true })
+  document.fonts?.ready.then(refresh)
 }
