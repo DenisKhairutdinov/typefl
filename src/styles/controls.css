@@ -105,7 +105,7 @@ textarea.field__input {
   left: 12px;
   z-index: 40;
   display: grid;
-  grid-template-columns: 1fr 1fr 1.6fr;
+  grid-template-columns: 60px 60px 1fr;
   background: color-mix(in srgb, var(--ink) 55%, transparent);
   backdrop-filter: blur(18px) saturate(140%);
 }
@@ -134,8 +134,8 @@ textarea.field__input {
 .dock__item[href*='max.ru']::before {
   content: '';
   flex: none;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   background: currentcolor;
   mask: var(--icon-max) center / contain no-repeat;
 }
@@ -144,10 +144,13 @@ textarea.field__input {
   mask-image: var(--icon-phone);
 }
 
-/* «Позвонить» и «Max» на тёмной панели: светлая подложка и белый текст, чтобы не терялись на чёрном */
+/* «Позвонить» и «Max» на тёмной панели: светлая подложка и белый значок, чтобы не терялись на чёрном.
+   Подпись скрыта размером шрифта: виден только значок, а название остаётся для экранных читалок */
 .dock__item:not(.dock__item--main) {
+  gap: 0;
   background: rgb(255 255 255 / 18%);
   color: #fff;
+  font-size: 0;
 }
 
 .dock__item + .dock__item {
