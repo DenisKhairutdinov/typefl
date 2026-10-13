@@ -238,27 +238,39 @@ function reveals() {
   ]
   const items = [...new Set(groups.flatMap((selector) => $$(selector)))]
   gsap.set(items, { opacity: 0, y: 30 })
-  ScrollTrigger.batch(items, {
-    start: 'top 92%',
-    onEnter: (batch) =>
-      gsap.to(batch, {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        stagger: 0.06,
-        ease: 'power3.out',
-        overwrite: true,
-      }),
-    onLeaveBack: (batch) =>
-      gsap.to(batch, {
-        opacity: 0,
-        y: 30,
-        duration: 0.45,
-        stagger: 0.03,
-        ease: 'power2.in',
-        overwrite: true,
-      }),
-  })
+  // IntersectionObserver, а не ScrollTrigger: считает по реальному положению блока и не зависит от
+  // пересчёта триггеров, когда высота страницы меняется (шрифты, миниатюры, конфигуратор)
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const shown = entries.filter((entry) => entry.isIntersecting).map((entry) => entry.target)
+      // Блок ушёл вниз за экран при прокрутке вверх: прячем снова, чтобы он появился заново
+      const hidden = entries
+        .filter((entry) => !entry.isIntersecting && entry.boundingClientRect.top > 0)
+        .map((entry) => entry.target)
+      if (shown.length) {
+        gsap.to(shown, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.06,
+          ease: 'power3.out',
+          overwrite: true,
+        })
+      }
+      if (hidden.length) {
+        gsap.to(hidden, {
+          opacity: 0,
+          y: 30,
+          duration: 0.45,
+          stagger: 0.03,
+          ease: 'power2.in',
+          overwrite: true,
+        })
+      }
+    },
+    { rootMargin: '0px 0px -8% 0px' },
+  )
+  for (const item of items) observer.observe(item)
 }
 
 /** Кадр-утверждение: слова заполняются по мере прокрутки, без закрепления, и обратно. */
