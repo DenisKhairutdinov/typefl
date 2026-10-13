@@ -105,7 +105,7 @@ textarea.field__input {
   left: 12px;
   z-index: 40;
   display: grid;
-  grid-template-columns: 60px 60px 1fr;
+  grid-template-columns: 1fr 1fr 1.6fr;
   background: color-mix(in srgb, var(--ink) 55%, transparent);
   backdrop-filter: blur(18px) saturate(140%);
 }
