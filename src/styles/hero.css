@@ -496,12 +496,12 @@
   }
 }
 
-/* Значок сообщения у кнопки Max в шапке на десктопе */
+/* Логотип Max у кнопки Max в шапке на десктопе */
 .top__max::before {
   content: '';
   flex: none;
   width: 16px;
   height: 16px;
   background: currentcolor;
-  mask: var(--icon-chat) center / contain no-repeat;
+  mask: var(--icon-max) center / contain no-repeat;
 }
