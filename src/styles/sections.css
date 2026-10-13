@@ -409,8 +409,6 @@
 
 .cfg__legend {
   display: block;
-  float: left;
-  width: 100%;
   min-width: 0;
 
   /* break-word, а не anywhere: заголовок переносится по словам и не рассыпается по буквам */

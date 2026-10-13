@@ -237,8 +237,12 @@ export function initConfigurator(root) {
   const renderStep = (step, index) => {
     const s = state[current.id]
     const wide = step.type === 'multi' || ['purpose', 'volume'].includes(step.key)
-    const set = el('fieldset', wide ? 'cfg__step cfg__step--wide' : 'cfg__step')
-    const legend = el('legend', 'cfg__legend')
+    // Обычные div, а не fieldset с legend: legend рисуется поверх верхней границы и вылезает за блок
+    const set = el('div', wide ? 'cfg__step cfg__step--wide' : 'cfg__step')
+    const legend = el('div', 'cfg__legend')
+    legend.id = `cfg-step-${current.id}-${step.key}`
+    set.setAttribute('role', 'group')
+    set.setAttribute('aria-labelledby', legend.id)
     legend.append(el('span', 'cfg__n', String(index + 1).padStart(2, '0')), step.title)
     set.append(legend)
 
