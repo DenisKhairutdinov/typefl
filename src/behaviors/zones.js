@@ -7,9 +7,11 @@ export function initZones(root = document) {
   const products = root.querySelector('#products')
   if (!top || !products) return
 
+  // На телефоне фон секции с карточками тёмный, шапка остаётся тёмной
+  const phone = matchMedia('(max-width: 767px)')
   const update = () => {
     const box = products.getBoundingClientRect()
-    const light = box.top < 72 && box.bottom > 72
+    const light = !phone.matches && box.top < 72 && box.bottom > 72
     top.dataset.zone = light ? 'a' : 'b'
   }
   addEventListener('scroll', update, { passive: true })
