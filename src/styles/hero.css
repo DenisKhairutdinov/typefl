@@ -505,3 +505,10 @@
   background: currentcolor;
   mask: var(--icon-max) center / contain no-repeat;
 }
+
+/* Перекраска шапки без плавного перехода: при загрузке посреди страницы и при быстром скачке по якорю.
+   Иначе на доли секунды виден промежуточный фон */
+.top.is-instant .top__bar,
+.top.is-instant .top__bar * {
+  transition: none !important;
+}
