@@ -955,11 +955,29 @@
 /* Крестик окна модели в привычном углу: плотная плашка, под ней текст проходит без наложения */
 .dialog--model > .dialog__close {
   z-index: 6;
-  background: color-mix(in srgb, var(--white) 14%, var(--ink));
+  width: 48px;
+  height: 48px;
+
+  /* Тёмная плашка с белым крестом и тенью: читается и на светлых, и на тёмных блоках под ней */
+  background: #1a1a18;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 45%),
+    0 8px 22px rgb(0 0 0 / 55%);
+}
+
+.dialog--model > .dialog__close::before,
+.dialog--model > .dialog__close::after {
+  inset: 50% 12px auto;
+  background: #fff;
 }
 
 .dialog--model > .dialog__close:hover {
   background: var(--accent);
+}
+
+.dialog--model > .dialog__close:hover::before,
+.dialog--model > .dialog__close:hover::after {
+  background: #1a1a18;
 }
 
 /* Окно с политиками и соглашением */
