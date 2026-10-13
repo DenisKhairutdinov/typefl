@@ -273,10 +273,9 @@
   border: 0;
   background: var(--glass-clear);
   backdrop-filter: blur(8px) saturate(140%);
-  transition:
-    transform 0.5s var(--ease),
-    border-color 0.4s var(--ease),
-    background-color 0.4s var(--ease);
+
+  /* Перехода на transform нет: он спорил со вступительной анимацией, и плашки оставались ниже места */
+  transition: background-color 0.4s var(--ease);
   box-shadow:
     0 20px 44px -18px rgb(0 0 0 / 65%),
     0 2px 8px rgb(0 0 0 / 30%);
@@ -336,6 +335,11 @@
   color: var(--line);
   font-family: var(--font-mono);
   font-size: 0.78rem;
+}
+
+/* Строка документов под плашками стоит к ним ближе, чем блоки первого экрана друг к другу */
+.hero__marks--docs {
+  margin-top: calc(-0.5 * clamp(20px, 2.6vw, 36px));
 }
 
 .hero__marks li::before {
@@ -522,6 +526,10 @@
 
   .hero__inner {
     gap: 20px;
+  }
+
+  .hero__marks--docs {
+    margin-top: -8px;
   }
 
   .feat {
