@@ -1417,7 +1417,9 @@
 .foot__bar {
   display: grid;
   gap: 12px;
-  padding-block: 24px 112px;
+
+  /* Место под нижнюю панель на телефоне даёт сам подвал (controls.css), здесь только свой отступ */
+  padding-block: 24px 16px;
   color: var(--mute);
   font-size: 0.85rem;
 }
