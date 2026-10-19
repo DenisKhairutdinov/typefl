@@ -5,28 +5,19 @@ import { track } from '../lib/track.js'
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-let statusSeq = 0
-
-/**
- * Подсвечивает поле с ошибкой и встряхивает его, помечает его для экранных читалок и связывает
- * с сообщением о проблеме; всё уходит, когда посетитель начинает исправлять.
- */
-function shake(input, statusId) {
+/** Подсвечивает поле с ошибкой и встряхивает его; подсветка уходит, когда посетитель начинает исправлять. */
+function shake(input) {
   const box = input.closest('.field, .consent')
   if (!box) return
-  input.setAttribute('aria-invalid', 'true')
-  if (statusId) input.setAttribute('aria-describedby', statusId)
   box.classList.remove('is-shake')
   // Перезапуск анимации: без чтения размеров повторное добавление класса её не запустит
   void box.offsetWidth
   box.classList.add('is-shake')
   box.addEventListener('animationend', () => box.classList.remove('is-shake'), { once: true })
-  if (box.classList.contains('field')) box.classList.add('field--invalid')
-  const clear = () => {
-    input.removeAttribute('aria-invalid')
-    box.classList.remove('field--invalid')
+  if (box.classList.contains('field')) {
+    box.classList.add('field--invalid')
+    input.addEventListener('input', () => box.classList.remove('field--invalid'), { once: true })
   }
-  input.addEventListener(input.type === 'checkbox' ? 'change' : 'input', clear, { once: true })
 }
 
 /**
@@ -37,7 +28,6 @@ function shake(input, statusId) {
  */
 export async function submitLead(form, goal) {
   const status = form.querySelector('[data-form-status]')
-  status.id ||= `form-status-${++statusSeq}`
   const say = (text, state) => {
     status.textContent = text
     status.dataset.state = state
@@ -49,7 +39,7 @@ export async function submitLead(form, goal) {
   if (!name.value.trim()) {
     say('Напишите, как к вам обращаться.', 'error')
     name.focus()
-    shake(name, status.id)
+    shake(name)
     return
   }
   if (!isPhoneValid(phone.value)) {
@@ -58,20 +48,20 @@ export async function submitLead(form, goal) {
       'error',
     )
     phone.focus()
-    shake(phone, status.id)
+    shake(phone)
     return
   }
   if (email.value.trim() && !EMAIL.test(email.value.trim())) {
     say('Проверьте адрес почты или оставьте поле пустым.', 'error')
     email.focus()
-    shake(email, status.id)
+    shake(email)
     return
   }
   const consent = form.elements.namedItem('consent')
   if (consent && !consent.checked) {
     say('Подтвердите согласие на обработку персональных данных.', 'error')
     consent.focus()
-    shake(consent, status.id)
+    shake(consent)
     return
   }
   const viaTilda = hasTildaForm()

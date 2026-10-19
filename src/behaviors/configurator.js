@@ -42,22 +42,6 @@ const OPTION_RULES = {
   },
 }
 
-/** Почему вариант закрыт: короткая причина для плитки и сообщения. Пустая строка, если открыт. */
-function reasonOf(key, option, s) {
-  if (key === 'sections' && s.purpose === 'Техническая вода' && option !== '1') {
-    return 'для воды: 1'
-  }
-  if (key === 'sections' && option === '3') return 'от 20 м³'
-  if (key === 'sections' && option === '4') return 'от 28 м³'
-  if (key === 'axles' && option === '2') return 'до 24 м³'
-  if (key === 'axles' && option === '3') return 'от 25 м³'
-  if (key === 'axles' && option === '4') return 'от 32 м³'
-  if (key === 'extras' && option === INSULATION) return 'не для светлых нефтепродуктов'
-  if (key === 'extras' && option === 'Узел выдачи топлива') return 'только для светлых'
-  if (key === 'extras' && option === 'Нижний налив / рекуперация') return 'не для воды'
-  return ''
-}
-
 /** Префикс по назначению: светлые нефтепродукты, тёмные, техническая вода. */
 const PURPOSE_PREFIX = {
   'Светлые нефтепродукты': 'ППЦ',
@@ -124,21 +108,17 @@ export function initConfigurator(root) {
       }
     }
   }
+  normalize(state.trailer)
   let current = CONFIGURATORS[0]
   let reported = false
-  let notice = ''
   const refs = {}
-  normalize(state.trailer)
 
   const tabs = el('div', 'cfg__tabs')
   tabs.setAttribute('role', 'tablist')
   const form = el('div', 'cfg__steps')
   const aside = el('aside', 'cfg__summary')
   aside.setAttribute('aria-live', 'polite')
-  // На телефоне и планшете итог лежит под всеми шагами, поэтому код и кнопка дублируются в полосе,
-  // которая держится над нижней панелью, пока конфигуратор на экране
-  const bar = el('div', 'cfg__bar')
-  box.append(...(CONFIGURATORS.length > 1 ? [tabs] : []), form, aside, bar)
+  box.append(...(CONFIGURATORS.length > 1 ? [tabs] : []), form, aside)
 
   const renderSummary = () => {
     const s = state[current.id]
@@ -155,11 +135,9 @@ export function initConfigurator(root) {
     const actions = el('div', 'cfg__actions')
     const kp = el('button', 'btn btn--primary btn--big', 'Получить КП')
     const talk = el('button', 'btn btn--line btn--big', 'Обсудить с менеджером')
-    const barKp = el('button', 'btn btn--primary', 'Получить КП')
     for (const [btn, title] of [
       [kp, `Получите КП на ${code}`],
       [talk, 'Обсудить с менеджером'],
-      [barKp, `Получите КП на ${code}`],
     ]) {
       btn.type = 'button'
       btn.dataset.open = 'kp'
@@ -170,15 +148,12 @@ export function initConfigurator(root) {
       btn.dataset.configRows = JSON.stringify(rows)
     }
     actions.append(kp, talk)
-    const head = [el('p', 'cfg__label', 'Ваша конфигурация'), el('p', 'cfg__code', code)]
-    if (notice) {
-      const note = el('p', 'cfg__notice', notice)
-      note.setAttribute('role', 'status')
-      head.push(note)
-    }
-    aside.replaceChildren(...head, list, actions)
-    const barCode = el('span', 'cfg__bar-code', code)
-    bar.replaceChildren(barCode, barKp)
+    aside.replaceChildren(
+      el('p', 'cfg__label', 'Ваша конфигурация'),
+      el('p', 'cfg__code', code),
+      list,
+      actions,
+    )
   }
 
   // На низком экране список прокручивается внутри итога. Колесо над любой частью итога листает
@@ -200,7 +175,7 @@ export function initConfigurator(root) {
   )
 
   const changed = (key) => {
-    notice = normalize(state[current.id]).join(' ')
+    normalize(state[current.id])
     refresh()
     renderSummary()
     if (!reported) {
@@ -223,32 +198,17 @@ export function initConfigurator(root) {
 
   /** Если выбранное значение стало недоступным, берём первое допустимое. */
   function normalize(s) {
-    const notes = []
-    const titleOf = (key) => current.steps.find((x) => x.key === key)?.title ?? key
     for (const key of Object.keys(LIMITS)) {
       const max = LIMITS[key](s)
       if (max !== null && s[key] > max) s[key] = max
     }
     for (const key of Object.keys(RULES)) {
       const list = RULES[key](s)
-      if (list && !list.includes(s[key])) {
-        const was = s[key]
-        s[key] = list[0]
-        notes.push(
-          `${titleOf(key)}: теперь ${s[key]}. Вариант ${was} недоступен (${reasonOf(key, was, s)}).`,
-        )
-      }
+      if (list && !list.includes(s[key])) s[key] = list[0]
     }
     for (const [key, rules] of Object.entries(OPTION_RULES)) {
-      const kept = s[key].filter((option) => !rules[option] || rules[option](s))
-      for (const option of s[key]) {
-        if (!kept.includes(option)) {
-          notes.push(`Опция «${option.split(' (')[0]}» снята (${reasonOf(key, option, s)}).`)
-        }
-      }
-      s[key] = kept
+      s[key] = s[key].filter((option) => !rules[option] || rules[option](s))
     }
-    return notes
   }
 
   /** Закрывает недоступные варианты и обновляет подсказки. */
@@ -276,7 +236,6 @@ export function initConfigurator(root) {
         const off = Boolean(list) && !list.includes(option)
         node.label.classList.toggle('is-disabled', off)
         node.input.setAttribute('aria-disabled', String(off))
-        node.why.textContent = off ? reasonOf(key, option, s) : ''
         node.input.checked = s[key] === option
       }
     }
@@ -287,7 +246,6 @@ export function initConfigurator(root) {
         const off = Boolean(rules[option]) && !rules[option](s)
         node.label.classList.toggle('is-disabled', off)
         node.input.setAttribute('aria-disabled', String(off))
-        node.why.textContent = off ? reasonOf(key, option, s) : ''
         node.input.checked = s[key].includes(option)
       }
     }
@@ -304,7 +262,6 @@ export function initConfigurator(root) {
     set.setAttribute('aria-labelledby', legend.id)
     legend.append(el('span', 'cfg__n', String(index + 1).padStart(2, '0')), step.title)
     set.append(legend)
-    if (step.hint) set.append(el('p', 'cfg__hint', step.hint))
 
     if (step.type === 'range') {
       const out = el('output', 'cfg__out', `${s[step.key]} ${step.unit}`)
@@ -359,22 +316,10 @@ export function initConfigurator(root) {
       input.name = `${current.id}-${step.key}`
       input.value = option
       input.checked = step.type === 'multi' ? s[step.key].includes(option) : s[step.key] === option
-      const why = el('span', 'opt__why')
       label.addEventListener('click', (event) => {
-        if (isOff(step.key, option)) {
-          event.preventDefault()
-          notice = `Вариант «${option.split(' (')[0]}» недоступен: ${reasonOf(step.key, option, s)}.`
-          renderSummary()
-        }
+        if (isOff(step.key, option)) event.preventDefault()
       })
       input.addEventListener('change', () => {
-        // Стрелки на клавиатуре обходят click: закрытый вариант не выбираем и там
-        if (isOff(step.key, option)) {
-          notice = `Вариант «${option.split(' (')[0]}» недоступен: ${reasonOf(step.key, option, s)}.`
-          refresh()
-          renderSummary()
-          return
-        }
         if (step.type === 'multi') {
           s[step.key] = [...group.querySelectorAll('input:checked')].map((i) => i.value)
         } else {
@@ -382,11 +327,9 @@ export function initConfigurator(root) {
         }
         changed(step.key)
       })
-      const text = el('span', 'opt__text')
-      text.append(el('span', 'opt__name', option), why)
-      label.append(input, text)
+      label.append(input, el('span', 'opt__text', option))
       group.append(label)
-      options.set(option, { label, input, why })
+      options.set(option, { label, input })
     }
     set.append(group)
     if (restricted(step.key)) refs[step.key] = { options }
@@ -394,8 +337,8 @@ export function initConfigurator(root) {
   }
 
   const renderSteps = () => {
-    form.replaceChildren(...current.steps.map((step, index) => renderStep(step, index)))
-    notice = normalize(state[current.id]).join(' ')
+    form.replaceChildren(...current.steps.map(renderStep))
+    normalize(state[current.id])
     refresh()
     renderSummary()
   }

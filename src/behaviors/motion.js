@@ -169,6 +169,31 @@ function backdrops() {
   }
 }
 
+/** Блоки внутри секций едут с разной скоростью, чуть глубже, чем сам скролл. */
+function parallaxBlocks() {
+  const rules = [
+    ['.about__text', 5],
+    ['.figures', -6],
+    ['.adv:nth-child(even)', 6],
+    ['.terms__item:nth-child(even)', 8],
+    ['.contact__head', 4],
+    ['.subsidy__sum', -6],
+  ]
+  for (const [selector, shift] of rules) {
+    for (const el of $$(selector)) {
+      gsap.fromTo(
+        el,
+        { yPercent: -shift },
+        {
+          yPercent: shift,
+          ease: 'none',
+          scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true },
+        },
+      )
+    }
+  }
+}
+
 /** Заголовки секций поднимаются по словам, карточки появляются один раз. */
 function reveals() {
   for (const title of $$('[data-split]')) {
@@ -181,8 +206,20 @@ function reveals() {
       scrollTrigger: {
         trigger: title,
         start: 'top 88%',
-        toggleActions: 'play none none none',
+        toggleActions: 'play none none reverse',
       },
+    })
+    // Слова слегка расходятся в стороны и собираются в строку по мере прокрутки
+    words.forEach((word, i) => {
+      gsap.fromTo(
+        word.parentElement,
+        { x: i % 2 ? 36 : -36 },
+        {
+          x: 0,
+          ease: 'none',
+          scrollTrigger: { trigger: title, start: 'top bottom', end: 'top 82%', scrub: true },
+        },
+      )
     })
   }
   // Остальные блоки появляются пачками, чуть по очереди
@@ -207,18 +244,31 @@ function reveals() {
   // пересчёта триггеров, когда высота страницы меняется (шрифты, миниатюры, конфигуратор)
   const observer = new IntersectionObserver(
     (entries) => {
-      // Блок появляется один раз: при прокрутке вверх текст не прячется и не мешает перечитать
       const shown = entries.filter((entry) => entry.isIntersecting).map((entry) => entry.target)
-      if (!shown.length) return
-      gsap.to(shown, {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        stagger: 0.06,
-        ease: 'power3.out',
-        overwrite: true,
-      })
-      for (const item of shown) observer.unobserve(item)
+      // Блок ушёл вниз за экран при прокрутке вверх: прячем снова, чтобы он появился заново
+      const hidden = entries
+        .filter((entry) => !entry.isIntersecting && entry.boundingClientRect.top > 0)
+        .map((entry) => entry.target)
+      if (shown.length) {
+        gsap.to(shown, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.06,
+          ease: 'power3.out',
+          overwrite: true,
+        })
+      }
+      if (hidden.length) {
+        gsap.to(hidden, {
+          opacity: 0,
+          y: 30,
+          duration: 0.45,
+          stagger: 0.03,
+          ease: 'power2.in',
+          overwrite: true,
+        })
+      }
     },
     { rootMargin: '0px 0px -8% 0px' },
   )
@@ -246,16 +296,17 @@ function fillStatement() {
     .to('.statement__sub, .statement .btn', { opacity: 1, y: 0, ease: 'none' }, '>-0.2')
 }
 
-/** Крупная подпись бренда в подвале поднимается при подходе к концу страницы. */
+/** Крупная подпись бренда в подвале поднимается и собирается при подходе к концу страницы. */
 function footerMark() {
   const mark = document.querySelector('.foot__mark')
   if (!mark) return
   gsap.fromTo(
     mark,
-    { yPercent: 26, opacity: 0.3 },
+    { yPercent: 26, opacity: 0.3, letterSpacing: '0.06em' },
     {
       yPercent: 0,
       opacity: 1,
+      letterSpacing: '0em',
       ease: 'none',
       scrollTrigger: { trigger: mark, start: 'top bottom', end: 'bottom bottom', scrub: true },
     },
@@ -273,21 +324,9 @@ function header() {
   })
 }
 
-/** Шапка плотнее после первого экрана и без GSAP: нужна и при «уменьшить движение». */
-function headerStatic() {
-  const top = document.querySelector('[data-top]')
-  if (!top) return
-  const update = () => top.classList.toggle('is-solid', scrollY > 80)
-  addEventListener('scroll', update, { passive: true })
-  update()
-}
-
 /** Подключает движение. При настройке «уменьшить движение» страница остаётся статичной. */
 export function initMotion() {
-  if (reducedMotion()) {
-    headerStatic()
-    return
-  }
+  if (reducedMotion()) return
   initSmoothScroll()
   introHero()
   // На телефоне прокрутка идёт на слабом процессоре, и покадровые анимации от неё (раскрытие кадра,
@@ -298,6 +337,7 @@ export function initMotion() {
     parallaxHero()
     stages()
     backdrops()
+    parallaxBlocks()
     footerMark()
   }
   rail()

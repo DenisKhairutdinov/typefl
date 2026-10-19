@@ -28,7 +28,6 @@ export default defineConfig(({ mode }) => {
           output: {
             // Обычный скрипт без type="module": так его принимает любой конструктор и не нужен CORS
             format: 'iife',
-            inlineDynamicImports: true,
             entryFileNames: 'assets/app.js',
             assetFileNames: (asset) => {
               const name = asset.names?.[0] ?? asset.name ?? ''
