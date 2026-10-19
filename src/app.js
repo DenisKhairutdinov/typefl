@@ -1,4 +1,5 @@
 import { initConfigurator } from './behaviors/configurator.js'
+import { initConsent } from './behaviors/consent.js'
 import { initCounters } from './behaviors/counters.js'
 import { initForms } from './behaviors/forms.js'
 import { initHero } from './behaviors/hero.js'
@@ -32,6 +33,7 @@ export function initPage() {
   safely('forms', () => initForms(document))
   safely('ppu', () => initPpu(document))
   safely('legal', () => initLegal(document))
+  safely('consent', () => initConsent(document))
   safely('counters', () => initCounters(document))
   safely('motion', () => initMotion())
   safely('nav', () => initNav(document))
