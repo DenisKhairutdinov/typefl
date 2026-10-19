@@ -1,6 +1,5 @@
 import Lenis from 'lenis'
 
-import { LEGAL } from '../data/legal.js'
 import { reducedMotion } from '../lib/dom.js'
 
 const make = (tag, className, text) => {
@@ -39,7 +38,9 @@ export function initLegal(root) {
   }
   dialog.addEventListener('close', stopScroll)
 
-  const show = (key) => {
+  // Тексты политик большие и нужны не каждому: файл грузится при первом открытии
+  const show = async (key) => {
+    const { LEGAL } = await import('../data/legal.js')
     const doc = LEGAL[key]
     if (!doc) return
     title.textContent = doc.title

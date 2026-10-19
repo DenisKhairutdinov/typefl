@@ -63,6 +63,7 @@
 .top__logo {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: 12px;
   font-family: var(--font-mono);
   font-size: 0.95rem;
@@ -219,7 +220,7 @@
   padding-bottom: 12px;
   color: var(--line);
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
 }
 
 .hero__title {
@@ -339,7 +340,7 @@
   text-align: left;
   color: var(--line);
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
 }
 
 /* На широком экране отметки стоят ровно в две строки: четыре и три, последняя длинная на два столбца */
@@ -409,8 +410,8 @@
 .top__burger {
   position: relative;
   flex: none;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border: 0;
   background: var(--tint-2);
@@ -424,7 +425,7 @@
 .top__burger::after {
   content: '';
   position: absolute;
-  left: 11px;
+  left: 12px;
   width: 20px;
   height: 2px;
   background: currentcolor;
@@ -434,15 +435,15 @@
 }
 
 .top__burger::before {
-  top: 14px;
+  top: 15px;
 }
 
 .top__burger span {
-  top: 20px;
+  top: 21px;
 }
 
 .top__burger::after {
-  top: 26px;
+  top: 27px;
 }
 
 .top.is-menu .top__burger::before {

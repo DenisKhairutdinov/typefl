@@ -805,7 +805,7 @@
 }
 
 .field--invalid .field__input {
-  outline: 1px solid var(--accent);
+  outline: 2px solid var(--focus);
   outline-offset: 0;
 }
 
@@ -861,7 +861,7 @@
   background: none;
   color: var(--mute);
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.8125rem;
 }
 
 .ppu__row > span:first-child {

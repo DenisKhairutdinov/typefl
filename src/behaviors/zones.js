@@ -11,9 +11,7 @@ export function initZones(root = document) {
   // шапка сразу получает нужный фон, а не проходит через промежуточный
   const instant = () => {
     top.classList.add('is-instant')
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => top.classList.remove('is-instant')),
-    )
+    requestAnimationFrame(() => requestAnimationFrame(() => top.classList.remove('is-instant')))
   }
 
   // На телефоне фон секции с карточками тёмный, шапка остаётся тёмной

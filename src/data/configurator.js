@@ -25,7 +25,13 @@ export const CONFIGURATORS = [
       { key: 'frame', title: 'Конструкция', type: 'choice', options: ['Рамная', 'Безрамная'] },
       { key: 'wall', title: 'Толщина стенок цистерны', type: 'choice', options: ['4 мм', '5 мм'] },
       { key: 'axles', title: 'Количество осей', type: 'choice', options: ['2', '3', '4'] },
-      { key: 'maker', title: 'Производитель осей', type: 'choice', options: ['BPW', 'PLT'] },
+      {
+        key: 'maker',
+        title: 'Производитель осей',
+        type: 'choice',
+        options: ['BPW', 'PLT'],
+        hint: 'BPW — немецкие оси, PLT — российские.',
+      },
       {
         key: 'ssu',
         title: 'Высота ССУ',
@@ -34,6 +40,7 @@ export const CONFIGURATORS = [
         max: 1650,
         step: 50,
         unit: 'мм',
+        hint: 'ССУ — седельно-сцепное устройство, которым полуприцеп соединяется с тягачом.',
       },
       {
         key: 'tyres',

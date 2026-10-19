@@ -1,9 +1,13 @@
 import Lenis from 'lenis'
 
-import { DETAILS } from '../data/model-details.js'
 import { CARD_SIZES, MODELS, photoSrcset, photoUrl, thumbUrl } from '../data/models.js'
 import { reducedMotion } from '../lib/dom.js'
 import { track } from '../lib/track.js'
+
+/** Полные характеристики моделей тяжёлые и нужны только в окне модели: грузятся отдельным файлом. */
+let details = null
+const loadDetails = () =>
+  import('../data/model-details.js').then((module) => (details = module.DETAILS))
 
 const li = (text) => {
   const node = document.createElement('li')
@@ -306,6 +310,8 @@ export function initModels(root) {
   const dialog = root.querySelector('[data-dialog="model"]')
   if (!dialog) return
   const byId = new Map(MODELS.map((m) => [m.id, m]))
+  // Пока страница простаивает, подтягиваем данные, чтобы окно открывалось сразу с полным составом
+  ;(window.requestIdleCallback ?? setTimeout)(loadDetails)
   const $ = (name) => dialog.querySelector(`[data-model-${name}]`)
   const main = $('main')
   const thumbs = $('thumbs')
@@ -404,7 +410,13 @@ export function initModels(root) {
       }),
     )
 
-    renderDetails(DETAILS[model.id])
+    renderDetails(details?.[model.id])
+    if (!details) {
+      loadDetails().then(() => {
+        // Окно могли переключить на другую модель, пока файл грузился
+        if ($('code').textContent === model.code) renderDetails(details[model.id])
+      })
+    }
 
     const photos = [model.photo, ...(model.gallery ?? [])]
     thumbs.replaceChildren(

@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
+  min-height: 44px;
   padding: 14px 24px;
   border: 0;
   background-position: left center;
@@ -45,7 +46,7 @@
 
 .btn--small {
   padding: 10px 16px;
-  font-size: 0.74rem;
+  font-size: 0.8125rem;
 }
 
 .btn--big {
@@ -90,7 +91,7 @@
 
 .field__input:focus-visible {
   background: var(--tint-2);
-  outline: 1px solid var(--accent);
+  outline: 2px solid var(--focus);
   outline-offset: 0;
 }
 
@@ -119,7 +120,7 @@ textarea.field__input {
   border: 0;
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   text-decoration: none;
 }
@@ -229,6 +230,6 @@ textarea.field__input {
 }
 
 .consent__box:focus-visible {
-  outline: 1px solid var(--accent);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
