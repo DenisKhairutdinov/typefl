@@ -1647,7 +1647,7 @@
 }
 
 /* Плашка про cookie: слева внизу, на телефоне над нижней панелью */
-.consent {
+.cookie-bar {
   position: fixed;
   right: 12px;
   bottom: calc(80px + env(safe-area-inset-bottom, 0px));
@@ -1670,37 +1670,37 @@
     transform 0.5s var(--ease);
 }
 
-.consent[hidden] {
+.cookie-bar[hidden] {
   display: none;
 }
 
-.consent.is-shown {
+.cookie-bar.is-shown {
   opacity: 1;
   transform: none;
 }
 
-.consent__text {
+.cookie-bar__text {
   margin: 0;
   font-size: 0.82rem;
   line-height: 1.45;
 }
 
-.consent__link {
+.cookie-bar__link {
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-.consent__link:hover {
+.cookie-bar__link:hover {
   color: var(--accent);
 }
 
-.consent__ok {
+.cookie-bar__ok {
   flex: none;
 }
 
 @media (width >= 768px) {
-  .consent {
+  .cookie-bar {
     right: auto;
     bottom: 24px;
     left: 24px;
@@ -1709,8 +1709,84 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .consent {
+  .cookie-bar {
     transform: none;
     transition: none;
   }
+}
+
+/* Страница 404: на весь экран, логотип сверху, крупный код за заголовком */
+.nf {
+  position: relative;
+  display: flex;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--ink);
+  color: var(--white);
+}
+
+.nf__wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding-block: 28px var(--section);
+}
+
+.nf__logo {
+  align-self: flex-start;
+  color: var(--white);
+}
+
+.nf__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.nf__code {
+  position: absolute;
+  right: var(--gutter);
+  bottom: 0;
+  z-index: 0;
+  margin: 0;
+  color: transparent;
+  font-family: var(--font-display);
+  font-size: clamp(11rem, 38vw, 34rem);
+  font-weight: 300;
+  line-height: 0.8;
+  -webkit-text-stroke: 1px var(--rule-strong);
+  pointer-events: none;
+  user-select: none;
+}
+
+.nf__body > :not(.nf__code) {
+  position: relative;
+  z-index: 1;
+}
+
+.nf__lead {
+  max-width: 46ch;
+}
+
+.nf__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.nf__phone {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.nf__phone:hover {
+  color: var(--accent);
 }

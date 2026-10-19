@@ -140,6 +140,18 @@ writeFileSync(
   note('Подвал, нижняя панель и окна', 'на странице Footer') + localize(footerBlock) + '\n',
 )
 
+const notFoundBlock = readFileSync(join(root, 'src/pages/404.html'), 'utf8')
+  .replace(/\r\n/g, '\n')
+  .trim()
+writeFileSync(
+  join(root, 'tilda/404.html'),
+  note(
+    'Страница 404',
+    'на странице 404 (Настройки сайта → Ещё → Страница 404), без Header и Footer',
+  ) +
+    localize(notFoundBlock) +
+    '\n',
+)
 process.stdout.write(
-  `\nГотово. Хранилище: ${base}\nСкрипт и стили в head.html: ${pinned}assets/\nВставки: tilda/head.html, header.html, main.html, footer.html\n`,
+  `\nГотово. Хранилище: ${base}\nСкрипт и стили в head.html: ${pinned}assets/\nВставки: tilda/head.html, header.html, main.html, footer.html, 404.html\n`,
 )
