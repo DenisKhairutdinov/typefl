@@ -943,6 +943,13 @@
   cursor: pointer;
 }
 
+/* Видимая кнопка 24 px, нажимаемая область 44 px */
+.ppu-info::after {
+  content: '';
+  position: absolute;
+  inset: -10px;
+}
+
 .ppu-info:hover {
   background: var(--accent);
   color: var(--on-accent);

@@ -2,6 +2,37 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 
+/** Шрифты первого экрана: кириллица и латиница основного текста, заголовка и моноширинных подписей. */
+export const CRITICAL_FONTS =
+  /(?:inter-(?:latin|cyrillic)|sofia-sans-extra-condensed-cyrillic|jetbrains-mono-cyrillic)-wght-normal-.*\.woff2$/
+
+/**
+ * Предзагрузка шрифтов первого экрана: без неё текст сначала рисуется запасным шрифтом, а потом
+ * перестраивается, и блоки под ним сдвигаются.
+ */
+const preloadFonts = () => ({
+  name: 'preload-critical-fonts',
+  transformIndexHtml: {
+    order: 'post',
+    handler(_html, ctx) {
+      if (!ctx.bundle) return []
+      return Object.keys(ctx.bundle)
+        .filter((file) => CRITICAL_FONTS.test(file))
+        .map((file) => ({
+          tag: 'link',
+          attrs: {
+            rel: 'preload',
+            as: 'font',
+            type: 'font/woff2',
+            crossorigin: '',
+            href: `/${file}`,
+          },
+          injectTo: 'head-prepend',
+        }))
+    },
+  },
+})
+
 /**
  * Обычная сборка: сайт целиком, пути от корня.
  * Сборка для Тильды (--mode tilda): только скрипт и стили с постоянными именами,
@@ -12,6 +43,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: tilda ? process.env.ASSETS_BASE : '/',
+    plugins: tilda ? [] : [preloadFonts()],
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),

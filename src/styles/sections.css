@@ -1699,6 +1699,40 @@
   flex: none;
 }
 
+/* Телефон: плашка компактнее, чтобы не закрывать первый экран */
+@media (width < 768px) {
+  .cookie-bar {
+    gap: 12px;
+    padding: 10px 12px;
+  }
+
+  .cookie-bar__text {
+    font-size: 0.76rem;
+    line-height: 1.35;
+  }
+}
+
+/* Касание пальцем: ссылки и сворачиваемые блоки получают область не меньше 44 px */
+@media (pointer: coarse) {
+  .foot__col {
+    gap: 0;
+  }
+
+  .foot__link,
+  .foot__phone,
+  .contact__link,
+  .contact__phone,
+  .more__sum {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .cookie-bar__ok {
+    min-height: 44px;
+  }
+}
+
 @media (width >= 768px) {
   .cookie-bar {
     right: auto;

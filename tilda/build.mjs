@@ -16,11 +16,13 @@
  * а полный app.css подгружается следом, не блокируя отрисовку.
  */
 import { spawnSync } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { transform } from 'lightningcss'
+
+import { CRITICAL_FONTS } from '../vite.config.js'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const config = JSON.parse(readFileSync(join(root, 'tilda/config.json'), 'utf8'))
@@ -107,10 +109,21 @@ function criticalCss() {
   return `${fonts}${css}`
 }
 
+/** Предзагрузка шрифтов первого экрана: без неё текст перестраивается при подмене шрифта. */
+const fontPreloads = () =>
+  readdirSync(join(root, 'tilda/dist/assets'))
+    .filter((file) => CRITICAL_FONTS.test(file))
+    .map(
+      (file) =>
+        `<link rel="preload" as="font" type="font/woff2" href="${base}assets/${file}" crossorigin />`,
+    )
+    .join('\n')
+
 const cssHref = config.cssUrl || `${pinned}assets/app.css?v=${version}`
 
 const headFile = `<!-- Вставка в «Настройки сайта → Ещё → HTML-код для вставки внутрь HEAD». Сгенерировано tilda/build.mjs, руками не править. -->
 <link rel="preconnect" href="${new URL(base).origin}" crossorigin />
+${fontPreloads()}
 <style id="critical-css">${criticalCss()}</style>
 <link rel="stylesheet" href="${cssHref}" media="print" onload="this.media='all'" />
 <noscript><link rel="stylesheet" href="${cssHref}" /></noscript>
