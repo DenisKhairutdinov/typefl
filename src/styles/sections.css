@@ -55,6 +55,18 @@
   margin-top: 8px;
 }
 
+/* На широком экране пять кнопок в одну строку, ровные по ширине и высоте; подписи переносятся внутри кнопки */
+@media (width >= 1100px) {
+  .products__jump {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .products__jump .btn {
+    padding-inline: 12px;
+  }
+}
+
 .products__group {
   display: grid;
   gap: 6px;
