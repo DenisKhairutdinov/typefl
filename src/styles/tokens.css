@@ -5,13 +5,18 @@
  */
 @font-face {
   font-family: 'Sofia Fallback';
-  src: local('Arial'), local('Helvetica'), local('Roboto');
+  src:
+    local('Arial'),
+    local('Helvetica'),
+    local('Roboto');
   size-adjust: 54.5%;
 }
 
 @font-face {
   font-family: 'Inter Fallback';
-  src: local('Arial'), local('Helvetica');
+  src:
+    local('Arial'),
+    local('Helvetica');
   size-adjust: 106%;
 }
 
@@ -44,7 +49,7 @@
   --glass: rgb(26 26 24 / 55%);
   --glass-strong: rgb(26 26 24 / 78%);
   --glass-clear: rgb(26 26 24 / 16%);
-  --bar: rgb(26 26 24 / 46%);
+  --bar: rgb(26 26 24 / 16%);
   --bar-hover: rgb(255 255 255 / 14%);
   --bar-solid: rgb(70 70 66 / 78%);
   --bar-shadow: 0 14px 34px -14px rgb(0 0 0 / 70%);
@@ -66,8 +71,8 @@
     'Sofia Sans Extra Condensed Variable', 'Sofia Fallback', 'Arial Narrow', 'Roboto Condensed',
     sans-serif;
   --font-mono:
-    'JetBrains Mono Variable', 'JetBrains Mono', 'Mono Fallback', ui-monospace, 'SF Mono', consolas,
-    monospace;
+    'JetBrains Mono Variable', 'JetBrains Mono', 'Mono Fallback', ui-monospace, 'SF Mono',
+    consolas, monospace;
   --font-text:
     'Inter Variable', 'Inter Fallback', 'Inter Fallback Roboto', inter, system-ui, -apple-system,
     'Segoe UI', roboto, sans-serif;
