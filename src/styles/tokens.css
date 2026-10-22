@@ -1,4 +1,39 @@
-/* Дизайн-токены страницы. Палитра и моноширинный шрифт взяты с действующего typefl.ru. */
+/*
+ * Запасные шрифты с подогнанной шириной. Пока веб-шрифт грузится, текст рисуется запасным; если
+ * его ширина другая, заголовок и абзац переносятся иначе, и всё ниже прыгает (CLS). Коэффициенты
+ * измерены: Sofia Sans у́же Arial примерно в 1,84 раза, Inter шире Arial на 6%, шире Roboto на 17%.
+ */
+@font-face {
+  font-family: 'Sofia Fallback';
+  src:
+    local('Arial'),
+    local('Helvetica'),
+    local('Roboto');
+  size-adjust: 54.5%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  src:
+    local('Arial'),
+    local('Helvetica');
+  size-adjust: 106%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback Roboto';
+  src: local('Roboto');
+  size-adjust: 117%;
+}
+
+/* Consolas занимает 0,55 em на знак, JetBrains Mono 0,6 em. У моноширинных системных шрифтов
+   macOS, Android и Linux ширина знака около 0,6 em, им подгонка не нужна */
+@font-face {
+  font-family: 'Mono Fallback';
+  src: local('Consolas');
+  size-adjust: 109.1%;
+}
+
 :root {
   --ink: #1a1a18;
   --ink-2: #343432;
@@ -33,10 +68,14 @@
   --tone-2: #232321;
   --tone-3: #2c2c2a;
   --font-display:
-    'Sofia Sans Extra Condensed Variable', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+    'Sofia Sans Extra Condensed Variable', 'Sofia Fallback', 'Arial Narrow', 'Roboto Condensed',
+    sans-serif;
   --font-mono:
-    'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SF Mono', consolas, monospace;
-  --font-text: 'Inter Variable', inter, system-ui, -apple-system, 'Segoe UI', roboto, sans-serif;
+    'JetBrains Mono Variable', 'JetBrains Mono', 'Mono Fallback', ui-monospace, 'SF Mono',
+    consolas, monospace;
+  --font-text:
+    'Inter Variable', 'Inter Fallback', 'Inter Fallback Roboto', inter, system-ui, -apple-system,
+    'Segoe UI', roboto, sans-serif;
   --gutter: clamp(16px, 3.2vw, 48px);
   --section: clamp(56px, 6.5vw, 104px);
   --top: 64px;
