@@ -217,7 +217,12 @@
       as="image"
       media="(min-width: 768px), (orientation: landscape)"
       href="/photos/hero.webp"
-      imagesrcset="/photos/hero-640.webp 640w, /photos/hero-1200.webp 1200w, /photos/hero.webp 2200w"
+      imagesrcset="
+        /photos/hero-640.webp 640w,
+        /photos/hero-1200.webp 1200w,
+        /photos/hero.webp 2200w,
+        /photos/hero-3000.webp 3000w
+      "
       imagesizes="100vw"
       type="image/webp"
     />
@@ -298,7 +303,8 @@
               srcset="
                 /photos/hero-640.webp   640w,
                 /photos/hero-1200.webp 1200w,
-                /photos/hero.webp      2200w
+                /photos/hero.webp      2200w,
+                /photos/hero-3000.webp 3000w
               "
               sizes="100vw"
               alt="Полуприцеп-цистерна завода «Энергомаш» на нефтебазе в мороз, в инее и снегу"
@@ -312,7 +318,7 @@
         </div>
         <div class="hero__shade" aria-hidden="true"></div>
         <div class="hero__inner">
-          <p class="hero__kicker" data-hero-in>Для тяжёлых нагрузок и экстремальных условий</p>
+          <p class="hero__kicker" data-hero-in>Для тяжёлых нагрузок<br />и экстремальных условий</p>
           <h1
             class="hero__title"
             data-hero="title"
