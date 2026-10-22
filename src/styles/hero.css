@@ -415,6 +415,15 @@
   background: var(--bar-hover);
 }
 
+/* Лёгкая тень мелкому тексту на светлом снимке; над светлыми секциями (data-zone='a') она не нужна */
+.hero__kicker,
+.hero__marks,
+.hero__lead,
+.top:not([data-zone='a']) .top__link,
+.top:not([data-zone='a']) .top__phone {
+  text-shadow: 0 1px 8px rgb(0 0 0 / 45%);
+}
+
 /* «Конфигуратор» в первом экране: то же стекло, что у плиток */
 .hero__actions .btn--line {
   background-color: rgb(255 255 255 / 36%);
