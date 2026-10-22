@@ -2,26 +2,35 @@
 <main id="main">
       <section class="hero" id="top">
         <div class="hero__media" data-hero-media>
-          <img
-            class="hero__photo"
-            src="https://cdn.jsdelivr.net/gh/DenisKhairutdinov/typefl@143ac4d/tilda/dist/photos/hero.webp"
-            srcset="
-              https://cdn.jsdelivr.net/gh/DenisKhairutdinov/typefl@143ac4d/tilda/dist/photos/hero-640.webp   640w,
-              https://cdn.jsdelivr.net/gh/DenisKhairutdinov/typefl@143ac4d/tilda/dist/photos/hero-1200.webp 1200w,
-              https://cdn.jsdelivr.net/gh/DenisKhairutdinov/typefl@143ac4d/tilda/dist/photos/hero.webp      2200w
-            "
-            sizes="100vw"
-            alt="Полуприцеп-цистерна завода «Энергомаш» на нефтебазе"
-            width="2200"
-            height="1100"
-            fetchpriority="high"
-            decoding="async"
-            data-hero="photo"
-          />
+          <picture>
+            <!-- Телефон: отдельная вертикальная обрезка, иначе из широкого кадра виден узкий кусок цистерны -->
+            <source
+              media="(max-width: 767px) and (orientation: portrait)"
+              srcset="https://cdn.jsdelivr.net/gh/DenisKhairutdinov/typefl@143ac4d/tilda/dist/photos/hero-m-600.webp 600w, https://cdn.jsdelivr.net/gh/DenisKhairutdinov/typefl@143ac4d/tilda/dist/photos/hero-m-887.webp 887w"
+              sizes="100vw"
+              type="image/webp"
+            />
+            <img
+              class="hero__photo"
+              src="https://cdn.jsdelivr.net/gh/DenisKhairutdinov/typefl@143ac4d/tilda/dist/photos/hero.webp"
+              srcset="
+                https://cdn.jsdelivr.net/gh/DenisKhairutdinov/typefl@143ac4d/tilda/dist/photos/hero-640.webp   640w,
+                https://cdn.jsdelivr.net/gh/DenisKhairutdinov/typefl@143ac4d/tilda/dist/photos/hero-1200.webp 1200w,
+                https://cdn.jsdelivr.net/gh/DenisKhairutdinov/typefl@143ac4d/tilda/dist/photos/hero.webp      2200w
+              "
+              sizes="100vw"
+              alt="Полуприцеп-цистерна завода «Энергомаш» на нефтебазе в мороз, в инее и снегу"
+              width="2200"
+              height="1100"
+              fetchpriority="high"
+              decoding="async"
+              data-hero="photo"
+            />
+          </picture>
         </div>
         <div class="hero__shade" aria-hidden="true"></div>
         <div class="hero__inner">
-          <p class="hero__kicker" data-hero-in>ООО «Энергомаш»</p>
+          <p class="hero__kicker" data-hero-in>Для тяжёлых нагрузок и экстремальных условий</p>
           <h1
             class="hero__title"
             data-hero="title"
@@ -34,8 +43,9 @@
           </h1>
           <div class="hero__row">
             <p class="hero__lead" data-hero="lead">
-              31 год производства, более 5 200 единиц техники. Изготавливаем под вашу задачу и
-              климат, КП с ценой присылаем за 1 рабочий день.
+              31 год производства, более 5 200 единиц техники. Цистерны выдерживают
+              до&nbsp;−50&nbsp;°C: термоизоляция ППУ 100 мм и подогрев. КП с ценой присылаем за 1
+              рабочий день.
             </p>
             <div class="hero__actions">
               <button
@@ -51,34 +61,38 @@
               <a class="btn btn--line btn--big" href="#constructor">Конфигуратор</a>
             </div>
             <ul class="hero__marks">
+              <li>Выдерживает до −50&nbsp;°C</li>
               <li>Субсидия Минпромторга</li>
               <li>Гарантия 12 месяцев</li>
               <li>В каталоге ГИСП</li>
               <li>Соответствие ДОПОГ</li>
               <li>Поверка в АРШИН</li>
-              <li>Передаём с ПТС</li>
               <li>Спецификация до начала производства</li>
             </ul>
           </div>
           <ol class="hero__feats">
             <li class="feat" data-hero-in>
               <span class="feat__n" aria-hidden="true">01</span>
-              <h2 class="feat__t">Усиленная<br />конструкция</h2>
-              <p class="feat__d">Фланжированные элементы и повышенная жёсткость</p>
+              <p class="feat__t">Усиленная<br />конструкция</p>
+              <p class="feat__d">
+                Сталь 09Г2С, стенки до 5 мм, фланжированные элементы и повышенная жёсткость
+              </p>
             </li>
             <li class="feat" data-hero-in>
               <span class="feat__n" aria-hidden="true">02</span>
-              <h2 class="feat__t">Комплектация<br />под ваши задачи</h2>
-              <p class="feat__d">Готовность к эксплуатации без дополнительных доработок</p>
+              <p class="feat__t">Для морозов<br />до −50&nbsp;°C</p>
+              <p class="feat__d">
+                Термоизоляция ППУ 100 мм, подогрев насосного отсека и сливного люка
+              </p>
             </li>
             <li class="feat" data-hero-in>
               <span class="feat__n" aria-hidden="true">03</span>
-              <h2 class="feat__t">Сталь 09Г2С,<br />стенки до 5 мм</h2>
-              <p class="feat__d">Повышенная стойкость к износу, вибрациям и нагрузкам</p>
+              <p class="feat__t">Комплектация<br />под ваши задачи</p>
+              <p class="feat__d">Готовность к эксплуатации без дополнительных доработок</p>
             </li>
             <li class="feat" data-hero-in>
               <span class="feat__n" aria-hidden="true">04</span>
-              <h2 class="feat__t">Отечественные<br />комплектующие</h2>
+              <p class="feat__t">Отечественные<br />комплектующие</p>
               <p class="feat__d">Доступность запасных частей, субсидия Минпромторга</p>
             </li>
           </ol>
@@ -88,10 +102,11 @@
       <section class="products" id="products" data-zone="a">
         <header class="products__head wrap">
           <p class="label">Продукция</p>
-          <h2 class="title" data-split>Спецтехника, которой доверяют перевозку</h2>
+          <h2 class="title" data-split>Автоцистерны и полуприцепы-цистерны</h2>
           <p class="lead">
-            Самые востребованные модели для перевозки в регионах России. Любую возьмём за основу и
-            изменим объём и оснащение под вашу задачу, а цену пришлём за 1 рабочий день.
+            Самые востребованные модели для работы на Севере и в других регионах России. Любую
+            возьмём за основу и изменим объём и оснащение под вашу задачу, а цену пришлём за 1
+            рабочий день.
           </p>
           <nav class="products__jump" aria-label="Быстрый переход по группам">
             <a class="btn btn--line" href="#g-truck">Автоцистерны для нефтепродуктов</a>
@@ -1622,8 +1637,8 @@
             <h2 class="title" data-split>Соберите цистерну под свою задачу</h2>
             <p class="lead">
               Комбинируйте объём, секции, оси, оснащение и другие характеристики. Завод
-              изготавливает под заказ, поэтому вне типового ряда вы получите индивидуальный расчёт,
-              а не отказ.
+              изготавливает под заказ, поэтому для параметров вне типового ряда сделаем
+              индивидуальный расчёт.
             </p>
           </header>
           <div class="cfg" data-configurator>
@@ -1671,7 +1686,7 @@
         <div class="wrap about__grid">
           <header class="about__head">
             <p class="label">О нас</p>
-            <h2 class="title" data-split>Предприятие, которое выбирают</h2>
+            <h2 class="title" data-split>Завод, который делает цистерны 31 год</h2>
           </header>
           <div class="about__body">
             <p class="about__text">
@@ -1738,17 +1753,17 @@
               </p>
             </li>
             <li class="adv" data-reveal>
-              <h3 class="adv__t">Производственные мощности</h3>
+              <h3 class="adv__t">Работа в сильные морозы</h3>
               <p class="adv__d">
-                Современное производственное оборудование и технологические мощности позволяют
-                выпускать более 300 моделей техники для различных отраслей промышленности.
+                Техника выдерживает до&nbsp;−50&nbsp;°C. Термоизоляция ППУ 100 мм, подогрев
+                насосного отсека и сливного люка.
               </p>
             </li>
             <li class="adv" data-reveal>
-              <h3 class="adv__t">Индивидуальные решения</h3>
+              <h3 class="adv__t">Поверка и комплект ADR в поставке</h3>
               <p class="adv__d">
-                Разрабатываем и дорабатываем конструкцию техники под нестандартные требования
-                предприятия и особенности эксплуатации.
+                Сертификат поверки в АРШИН и комплект ADR для моделей с ДОПОГ входят в поставку, их
+                не нужно оформлять самим.
               </p>
             </li>
           </ul>

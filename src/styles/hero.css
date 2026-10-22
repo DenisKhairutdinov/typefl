@@ -200,8 +200,21 @@
   }
 }
 
+/* Телефон: вертикальная обрезка снимка 1:2, цистерна и колесо внизу */
+@media (width <= 767px) and (orientation: portrait) {
+  .hero__photo {
+    object-position: 50% 100%;
+  }
+}
+
+/* Подложка светлее сверху и темнее внизу, где идёт текст: иначе серый зимний снимок выглядит мутным */
 .hero__shade {
-  background: var(--shade);
+  background: linear-gradient(
+    180deg,
+    rgb(26 26 24 / 36%) 0%,
+    rgb(26 26 24 / 48%) 45%,
+    rgb(26 26 24 / 66%) 100%
+  );
 }
 
 .hero__inner {
