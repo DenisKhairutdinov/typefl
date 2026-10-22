@@ -207,14 +207,35 @@
   }
 }
 
-/* Подложка светлее сверху и темнее внизу, где идёт текст: иначе серый зимний снимок выглядит мутным */
+/*
+ * Подложка лёгкая: снимок яркий (яркость заложена в файлы), поэтому читаемость текста держится
+ * не общим затемнением, а локальным: плотнее слева, где идёт текст, у верхнего края под шапкой
+ * и внизу под плашками, плюс тень у самого текста. Справа цистерна и иней остаются светлыми.
+ */
 .hero__shade {
-  background: linear-gradient(
-    180deg,
-    rgb(26 26 24 / 36%) 0%,
-    rgb(26 26 24 / 48%) 45%,
-    rgb(26 26 24 / 66%) 100%
-  );
+  background:
+    radial-gradient(ellipse 52% 36% at 24% 34%, rgb(26 26 24 / 46%), rgb(26 26 24 / 0%) 100%),
+    linear-gradient(90deg, rgb(26 26 24 / 52%) 0%, rgb(26 26 24 / 34%) 40%, rgb(26 26 24 / 0%) 72%),
+    linear-gradient(
+      180deg,
+      rgb(26 26 24 / 32%) 0%,
+      rgb(26 26 24 / 6%) 24%,
+      rgb(26 26 24 / 10%) 50%,
+      rgb(26 26 24 / 30%) 76%,
+      rgb(26 26 24 / 50%) 100%
+    );
+}
+
+/* Телефон: текст идёт на всю ширину, поэтому подложка ровная и плотнее */
+@media (width <= 767px) {
+  .hero__shade {
+    background: linear-gradient(
+      180deg,
+      rgb(26 26 24 / 44%) 0%,
+      rgb(26 26 24 / 54%) 45%,
+      rgb(26 26 24 / 62%) 100%
+    );
+  }
 }
 
 .hero__inner {
@@ -230,8 +251,12 @@
 
 .hero__kicker {
   margin-bottom: auto;
-  padding-bottom: 12px;
-  color: var(--line);
+  width: fit-content;
+  max-width: 100%;
+  padding: 6px 12px;
+  background: rgb(26 26 24 / 64%);
+  backdrop-filter: blur(8px);
+  color: var(--text-2);
   font-family: var(--font-mono);
   font-size: 0.78rem;
 }
@@ -246,6 +271,18 @@
   text-transform: uppercase;
   text-wrap: balance;
   overflow-wrap: break-word;
+  text-shadow: 0 2px 26px rgb(0 0 0 / 55%);
+}
+
+/* Переносы в заголовке: на десктопе всегда три строки, на планшете и телефоне строки идут по ширине */
+.hero__br {
+  display: none;
+}
+
+@media (width >= 992px) {
+  .hero__br {
+    display: inline;
+  }
 }
 
 .hero__row {
@@ -258,6 +295,7 @@
   max-width: 56ch;
   color: var(--text-2);
   font-size: clamp(1.05rem, 1rem + 0.3vw, 1.3rem);
+  text-shadow: 0 1px 14px rgb(0 0 0 / 60%);
 }
 
 .hero__actions {
@@ -351,9 +389,10 @@
   margin: 0;
   list-style: none;
   text-align: left;
-  color: var(--line);
+  color: var(--text-2);
   font-family: var(--font-mono);
   font-size: 0.78rem;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 65%);
 }
 
 /* На широком экране отметки стоят ровно в две строки: четыре и три, последняя длинная на два столбца */
@@ -575,5 +614,37 @@
   /* Номера плашек декоративные: на низком экране уступают место тексту */
   .feat__n {
     display: none;
+  }
+}
+
+/*
+ * Заголовок на десктопе идёт в три строки. Если по высоте экрана плашки уходят за нижний край,
+ * переносы снимаются, и заголовок остаётся в две строки. До 1200 px плашки стоят в два ряда
+ * и места нужно больше, поэтому порог выше.
+ */
+@media (width >= 992px) and (height < 840px) {
+  .hero__br {
+    display: none;
+  }
+}
+
+@media (992px <= width < 1200px) and (height < 960px) {
+  .hero__br {
+    display: none;
+  }
+}
+
+/* Широкий и невысокий экран: шрифт растёт от ширины, три строки по высоте не помещаются */
+@media (width >= 992px) and (aspect-ratio >= 9/5) {
+  .hero__br {
+    display: none;
+  }
+}
+
+/* На очень широком экране первая строка в два ряда не помещалась и сама разбивалась на две:
+   шрифт чуть меньше, чтобы «Завод полуприцепов-цистерн» шла одной строкой */
+@media (width >= 1800px) and (aspect-ratio >= 9/5) and (height > 960px) {
+  .hero__title {
+    font-size: min(7.6vw, 9.8rem);
   }
 }
