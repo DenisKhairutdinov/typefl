@@ -1,7 +1,9 @@
 const STORAGE_KEY = 'typefl:cookie-notice'
 /** Плашка показывается после первого действия посетителя; если его нет, то через это время. */
 const SHOW_DELAY = 20000
-const INTERACTIONS = ['scroll', 'pointerdown', 'keydown', 'touchstart']
+// Только действия самого человека. Событие scroll не годится: оно приходит и без него (восстановление
+// прокрутки, плавная прокрутка, скрипты конструктора), и плашка выскакивала на второй секунде
+const INTERACTIONS = ['wheel', 'pointerdown', 'keydown', 'touchstart']
 
 /** Хранилище может быть закрыто (приватный режим, запрет cookie): тогда плашка просто показывается каждый раз. */
 const wasAccepted = () => {
