@@ -1,6 +1,7 @@
 const STORAGE_KEY = 'typefl:cookie-notice'
-// Плашка не должна закрывать первый экран в момент, когда человек его читает
-const SHOW_DELAY = 6000
+/** Плашка показывается после первого действия посетителя; если его нет, то через это время. */
+const SHOW_DELAY = 20000
+const INTERACTIONS = ['scroll', 'pointerdown', 'keydown', 'touchstart']
 
 /** Хранилище может быть закрыто (приватный режим, запрет cookie): тогда плашка просто показывается каждый раз. */
 const wasAccepted = () => {
@@ -38,9 +39,16 @@ export function initConsent(root) {
 
   notice.querySelector('[data-consent-ok]')?.addEventListener('click', close)
 
-  setTimeout(() => {
+  const show = () => {
+    for (const type of INTERACTIONS) window.removeEventListener(type, show)
+    clearTimeout(fallback)
     notice.hidden = false
     // Один кадр на отрисовку, иначе переход появления не сработает
     requestAnimationFrame(() => notice.classList.add('is-shown'))
-  }, SHOW_DELAY)
+  }
+  // Пока человек читает первый экран, плашка не нужна. К тому же текст плашки — крупный блок,
+  // и появившись после загрузки, он стал бы главным элементом страницы и сдвинул LCP
+  for (const type of INTERACTIONS)
+    window.addEventListener(type, show, { once: true, passive: true })
+  const fallback = setTimeout(show, SHOW_DELAY)
 }

@@ -2,7 +2,11 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 
-/** Шрифты первого экрана: кириллица и латиница основного текста, заголовка и моноширинных подписей. */
+/**
+ * Шрифты первого экрана: кириллица и латиница основного текста, кириллица заголовка и
+ * моноширинных подписей. Замер показал, что с этими четырьмя первая отрисовка быстрее, чем
+ * с двумя кириллическими.
+ */
 export const CRITICAL_FONTS =
   /(?:inter-(?:latin|cyrillic)|sofia-sans-extra-condensed-cyrillic|jetbrains-mono-cyrillic)-wght-normal-.*\.woff2$/
 
