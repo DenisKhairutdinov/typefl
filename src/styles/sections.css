@@ -838,7 +838,7 @@
   }
 }
 
-/* Лизинг: условия крупными цифрами, субсидия акцентным блоком */
+/* Лизинг: условия крупными цифрами, скидка завода акцентным блоком */
 .terms {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -890,7 +890,7 @@
   color: var(--text-2);
 }
 
-.subsidy {
+.promo {
   display: grid;
   gap: 28px;
   margin-top: 12px;
@@ -899,14 +899,14 @@
   color: var(--white);
 }
 
-.subsidy__title {
+.promo__title {
   font-family: var(--font-mono);
   font-size: 0.82rem;
   font-weight: 600;
   opacity: 0.75;
 }
 
-.subsidy__sum {
+.promo__sum {
   margin-top: 10px;
   font-family: var(--font-display);
   font-size: clamp(3.4rem, 7.4vw, 8rem);
@@ -917,7 +917,7 @@
   white-space: nowrap;
 }
 
-.subsidy__cap {
+.promo__cap {
   margin-top: 10px;
   font-weight: 500;
 }
@@ -938,7 +938,7 @@
 }
 
 @media (width >= 992px) {
-  .subsidy {
+  .promo {
     grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
     gap: 56px;
   }

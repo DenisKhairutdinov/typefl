@@ -278,7 +278,7 @@ html.is-locked body {
 
 /* В крупных тонких заголовках тоньше и чуть меньше, чтобы совпасть по штриху */
 .title .rub,
-.subsidy__sum .rub {
+.promo__sum .rub {
   font-size: 0.8em;
   font-weight: 200;
 }

@@ -6,7 +6,7 @@ import { CONFIGURATORS } from './configurator.js'
 
 const DOPOG = 'Соответствие ДОПОГ'
 const ARSHIN = 'Сертификат поверки в АРШИН'
-const SUBSIDY = 'Субсидия Минпромторга'
+const DISCOUNT = 'Скидка 3% до 31 декабря'
 
 const TRUCK_SPECS = (pump, flow, volume, sections) => [
   ['Объём цистерны', volume],
@@ -41,7 +41,7 @@ const trailer = (id, code, kind, options) => ({
   group: 'trailer',
   kind,
   code,
-  badges: [SUBSIDY, DOPOG, ARSHIN],
+  badges: [DISCOUNT, DOPOG, ARSHIN],
   options,
   specs: TRAILER_SPECS,
   photo: photosOf(id)[0],

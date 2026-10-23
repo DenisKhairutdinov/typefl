@@ -181,7 +181,7 @@ function parallaxBlocks() {
     ['.adv:nth-child(even)', 6],
     ['.terms__item:nth-child(even)', 8],
     ['.contact__head', 4],
-    ['.subsidy__sum', -6],
+    ['.promo__sum', -6],
   ]
   for (const [selector, shift] of rules) {
     for (const el of $$(selector)) {
@@ -236,7 +236,7 @@ function reveals() {
     '.figure',
     '.terms__item',
     '.partner',
-    '.subsidy',
+    '.promo',
     '.contact__info',
     '.form--panel',
     // На телефоне покадровое раскрытие карточек отключено, вместо него лёгкое появление
