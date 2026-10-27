@@ -6,7 +6,7 @@ import { CONFIGURATORS } from './configurator.js'
 
 const DOPOG = 'Соответствие ДОПОГ'
 const ARSHIN = 'Сертификат поверки в АРШИН'
-const DISCOUNT = 'Скидка 3% до 31 декабря'
+const DISCOUNT = 'Скидка до 3% до 31 декабря'
 
 const TRUCK_SPECS = (pump, flow, volume, sections) => [
   ['Объём цистерны', volume],

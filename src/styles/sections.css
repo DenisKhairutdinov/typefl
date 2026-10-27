@@ -936,7 +936,6 @@
 .rows__row dd {
   font-weight: 600;
 }
-
 @media (width >= 992px) {
   .promo {
     grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
